@@ -229,8 +229,8 @@ export default function TaskDetail({ taskId, onNavigateBack, onShowDeveloping }:
       <div className="bg-white px-5 py-5 border-b border-gray-100">
         <div className="flex items-center gap-2 mb-3">
           <h1 className="text-[20px] text-gray-900" style={{ fontWeight: 700 }}>
-            {taskData.title}
-          </h1>
+          {taskData.title}
+        </h1>
           {taskData.type === 'team' && (
             <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-600 text-[12px]" style={{ fontWeight: 600 }}>
               团队任务

@@ -194,7 +194,7 @@ export default function TaskList({ onNavigateBack, onNavigateToTaskDetail, onSho
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <div className="text-[15px]" style={{ fontWeight: 500 }}>
-                      {task.name}
+                    {task.name}
                     </div>
                     {task.type === 'team' && (
                       <span className="px-1.5 py-0.5 rounded bg-purple-100 text-purple-600 text-[10px]" style={{ fontWeight: 600 }}>

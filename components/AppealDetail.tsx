@@ -245,20 +245,20 @@ export default function AppealDetail({ appealId, onNavigateBack, onShowDevelopin
       {/* 底部按钮 */}
       <div className="bottom-action-bar">
         <div className="px-4 py-4">
-          <div className="w-full flex gap-3">
-            <button
-              onClick={handleCancelAppeal}
-              className="flex-1 py-3 rounded-full border border-gray-300 text-[15px] text-gray-700"
-            >
-              撤销申诉
-            </button>
-            <button
-              onClick={onShowDeveloping}
-              className="flex-1 py-3 rounded-full bg-[#FFE500] text-[15px]"
-              style={{ fontWeight: 500 }}
-            >
-              补充证据
-            </button>
+        <div className="w-full flex gap-3">
+          <button
+            onClick={handleCancelAppeal}
+            className="flex-1 py-3 rounded-full border border-gray-300 text-[15px] text-gray-700"
+          >
+            撤销申诉
+          </button>
+          <button
+            onClick={onShowDeveloping}
+            className="flex-1 py-3 rounded-full bg-[#FFE500] text-[15px]"
+            style={{ fontWeight: 500 }}
+          >
+            补充证据
+          </button>
           </div>
         </div>
       </div>

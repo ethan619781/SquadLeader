@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Lock, Headphones, User, TrendingUp, Heart, Shield, Crown, CreditCard, Plane } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Lock, Headphones, User, TrendingUp, Heart, Shield, Crown, CreditCard, Plane, ChevronRight as ChevronRightIcon } from 'lucide-react';
 
 interface LevelCenterProps {
   onNavigateBack: () => void;
   onNavigateToRules: () => void;
   onShowDeveloping: () => void;
+  onNavigateToGrowthDetail?: () => void;
 }
 
 interface LevelCard {
@@ -26,8 +27,28 @@ interface Benefit {
   unlocked: boolean;
 }
 
-export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowDeveloping }: LevelCenterProps) {
+// 用户当前状态
+interface CurrentUser {
+  level: number;
+  levelName: string;
+  currentScore: number;
+  nextThreshold: number;
+  validUntil: string;
+  isMaxLevel: boolean;
+}
+
+export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowDeveloping, onNavigateToGrowthDetail }: LevelCenterProps) {
   const [currentCardIndex, setCurrentCardIndex] = useState(2); // 默认显示Lv.3当前等级
+
+  // 用户当前状态数据
+  const currentUser: CurrentUser = {
+    level: 3,
+    levelName: "顶级喜宝",
+    currentScore: 2500,
+    nextThreshold: 5000,
+    validUntil: "2026.04.01",
+    isMaxLevel: false
+  };
 
   // 等级卡片数据
   const levelCards: LevelCard[] = [
@@ -57,8 +78,8 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
       level: 3,
       name: '高级喜宝',
       unlocked: true,
-      currentValue: 1500,
-      targetValue: 1500,
+      currentValue: currentUser.currentScore,
+      targetValue: currentUser.nextThreshold,
       requirement: '当前等级',
       color: 'from-yellow-400 to-yellow-600',
       badgeColor: 'text-yellow-500',
@@ -68,9 +89,9 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
       level: 4,
       name: '顶级喜宝',
       unlocked: false,
-      currentValue: 1500,
-      targetValue: 3000,
-      requirement: '成长值达到 3000 可升级，需组建 3 个小队',
+      currentValue: 0,
+      targetValue: 0,
+      requirement: '成长值满5000可升级',
       color: 'from-purple-400 via-pink-500 to-red-500',
       badgeColor: 'text-purple-500',
       benefits: 8
@@ -205,23 +226,70 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
                           </div>
                         </div>
 
-                        {/* 进度信息 */}
+                        {/* 进度信息 / 当前成长值信息 */}
                         <div className="space-y-2">
-                          <div className="text-white/90 text-[13px] leading-relaxed">
-                            {card.requirement}
-                          </div>
-                          {!card.unlocked && (
-                            <div className="bg-white/10 rounded-full h-2 overflow-hidden">
-                              <div 
-                                className="h-full bg-gradient-to-r from-yellow-400 to-orange-400 transition-all duration-500"
-                                style={{ width: `${(card.currentValue / card.targetValue) * 100}%` }}
-                              />
+                          {card.level === currentUser.level ? (
+                            <div
+                              className="bg-white/10 rounded-xl p-3 cursor-pointer active:scale-[0.98] transition-transform -mx-1"
+                              onClick={onNavigateToGrowthDetail}
+                            >
+                              <div className="flex items-center justify-between mb-1.5">
+                                <span className="text-[13px] text-white/80" style={{ fontWeight: 500 }}>
+                                  当前成长值
+                                </span>
+                              </div>
+                              <div className="flex items-baseline gap-2 mb-1.5">
+                                <span className="text-[22px] text-white" style={{ fontWeight: 700 }}>
+                                  {currentUser.currentScore.toLocaleString()}
+                                </span>
+                                {!currentUser.isMaxLevel && (
+                                  <>
+                                    <span className="text-[13px] text-white/70">/</span>
+                                    <span className="text-[16px] text-white/80" style={{ fontWeight: 500 }}>
+                                      {currentUser.nextThreshold.toLocaleString()}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                              {!currentUser.isMaxLevel && (
+                                <div className="flex items-center justify-between mt-1">
+                                  <div className="flex-1 bg-white/20 rounded-full h-1.5 overflow-hidden mr-2">
+                                    <div
+                                      className="h-full bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 transition-all duration-500"
+                                      style={{ width: `${(currentUser.currentScore / currentUser.nextThreshold) * 100}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-[11px] text-white/80">
+                                    还需 {currentUser.nextThreshold - currentUser.currentScore} 成长值升级
+                                  </span>
+                                </div>
+                              )}
+                              <div className="mt-2 flex items-center justify-between text-[11px] text-white/70">
+                                <span>等级有效期</span>
+                                <span style={{ fontWeight: 500 }}>{currentUser.validUntil}</span>
+                              </div>
                             </div>
-                          )}
-                          {!card.unlocked && (
-                            <div className="text-white/70 text-[11px]">
-                              {card.currentValue} / {card.targetValue}
-                            </div>
+                          ) : (
+                            <>
+                              {card.requirement && (
+                                <div className="text-white/90 text-[13px] leading-relaxed">
+                                  {card.requirement}
+                                </div>
+                              )}
+                              {!card.unlocked && card.requirement && (
+                                <div className="bg-white/10 rounded-full h-2 overflow-hidden">
+                                  <div
+                                    className="h-full bg-gradient-to-r from-yellow-400 to-orange-400 transition-all duration-500"
+                                    style={{ width: `${(card.currentValue / card.targetValue) * 100}%` }}
+                                  />
+                                </div>
+                              )}
+                              {!card.unlocked && card.requirement && (
+                                <div className="text-white/70 text-[11px]">
+                                  {card.currentValue} / {card.targetValue}
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>

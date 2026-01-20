@@ -18,8 +18,9 @@ import PKRanking from './components/PKRanking';
 import PKTeamDetail from './components/PKTeamDetail';
 import LevelCenter from './components/LevelCenter';
 import LevelRules from './components/LevelRules';
+import GrowthDetail from './components/GrowthDetail';
 
-type PageType = 'home' | 'submit-ticket' | 'appeal-list' | 'appeal-detail' | 'team-recruitment' | 'team-application' | 'review-pending' | 'review-rejected' | 'team-leader' | 'task-list' | 'task-detail' | 'team-detail' | 'team-data' | 'pk-event-list' | 'pk-event-detail' | 'pk-ranking' | 'pk-team-detail' | 'level-center' | 'level-rules';
+type PageType = 'home' | 'submit-ticket' | 'appeal-list' | 'appeal-detail' | 'team-recruitment' | 'team-application' | 'review-pending' | 'review-rejected' | 'team-leader' | 'task-list' | 'task-detail' | 'team-detail' | 'team-data' | 'pk-event-list' | 'pk-event-detail' | 'pk-ranking' | 'pk-team-detail' | 'level-center' | 'level-rules' | 'growth-detail';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
@@ -236,6 +237,14 @@ export default function App() {
     setCurrentPage('team-leader');
   };
 
+  const navigateToGrowthDetail = () => {
+    setCurrentPage('growth-detail');
+  };
+
+  const navigateBackFromGrowthDetail = () => {
+    setCurrentPage('level-center');
+  };
+
   const navigateBackFromLevelRules = () => {
     setCurrentPage('level-center');
   };
@@ -244,7 +253,7 @@ export default function App() {
     <div className="phone-simulator-wrapper">
       <div className="phone-simulator">
         <div className="phone-content">
-          {currentPage === 'home' && (
+      {currentPage === 'home' && (
         <HomePage 
           onNavigateToSubmitTicket={navigateToSubmitTicket}
           onNavigateToAppealList={navigateToAppealList}
@@ -374,13 +383,19 @@ export default function App() {
           onNavigateBack={navigateBackFromLevelCenter}
           onNavigateToRules={navigateToLevelRules}
           onShowDeveloping={showDevelopingToast}
+          onNavigateToGrowthDetail={navigateToGrowthDetail}
         />
       )}
       {currentPage === 'level-rules' && (
         <LevelRules
           onNavigateBack={navigateBackFromLevelRules}
         />
-          )}
+      )}
+      {currentPage === 'growth-detail' && (
+        <GrowthDetail
+          onNavigateBack={navigateBackFromGrowthDetail}
+        />
+      )}
         </div>
       </div>
     </div>
