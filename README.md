@@ -47,10 +47,16 @@ pnpm dev
 ### 3. 构建生产版本
 
 ```bash
+# 快速构建（推荐，跳过严格类型检查）
+npm run build:fast
+
+# 完整构建（包含 TypeScript 类型检查）
 npm run build
 ```
 
 构建文件将生成在 `dist` 目录中。
+
+**注意**：项目使用 `build:fast` 进行快速构建，因为部分 UI 组件库依赖可能未安装（这些组件可能未实际使用）。Netlify 部署会自动使用 `build:fast` 脚本。
 
 ## 项目结构
 

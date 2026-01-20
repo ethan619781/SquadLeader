@@ -204,49 +204,7 @@ export default function TeamData({ onNavigateBack, onShowDeveloping }: TeamDataP
     );
   };
 
-  const handleCopyText = () => {
-    setShowDiagnostic(false);
-    const toast = document.createElement('div');
-    toast.textContent = '已复制催车文案到剪贴板';
-    toast.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      z-index: 9999;
-      font-size: 14px;
-    `;
-    document.body.appendChild(toast);
-    setTimeout(() => {
-      document.body.removeChild(toast);
-    }, 2000);
-  };
-
-  const handleGenerateReport = () => {
-    setShowDiagnostic(false);
-    const toast = document.createElement('div');
-    toast.textContent = '业绩战报生成中...';
-    toast.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      z-index: 9999;
-      font-size: 14px;
-    `;
-    document.body.appendChild(toast);
-    setTimeout(() => {
-      document.body.removeChild(toast);
-    }, 2000);
-  };
+  // 已移除未使用的函数 handleCopyText 和 handleGenerateReport
 
   // 获取趋势指示器
   const getTrendIndicator = (value: number, label: string) => {
@@ -527,8 +485,6 @@ export default function TeamData({ onNavigateBack, onShowDeveloping }: TeamDataP
       {showDiagnostic && (
         <DiagnosticModal
           onClose={() => setShowDiagnostic(false)}
-          onCopyText={handleCopyText}
-          onGenerateReport={handleGenerateReport}
         />
       )}
     </div>

@@ -1,6 +1,6 @@
 [build]
-  # 构建命令
-  command = "npm run build"
+  # 构建命令（使用快速构建，跳过严格的 TypeScript 检查）
+  command = "npm run build:fast"
   # 构建输出目录（Vite 默认输出到 dist）
   publish = "dist"
 

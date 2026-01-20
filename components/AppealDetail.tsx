@@ -1,5 +1,5 @@
 import { ChevronLeft, MoreHorizontal } from 'lucide-react';
-import exampleImage from 'figma:asset/5fe3bdd2a69c2de98dd13dbc0b21eca7e1b2352d.png';
+// import exampleImage from 'figma:asset/5fe3bdd2a69c2de98dd13dbc0b21eca7e1b2352d.png'; // 注释掉，构建时无法解析
 
 interface AppealDetailProps {
   appealId: number;
