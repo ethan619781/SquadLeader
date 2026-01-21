@@ -58,7 +58,7 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
       unlocked: true,
       currentValue: 100,
       targetValue: 100,
-      requirement: '已完成实名认证',
+      requirement: '',
       color: 'from-orange-400 to-orange-600',
       badgeColor: 'text-orange-500',
       benefits: 2
@@ -69,7 +69,7 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
       unlocked: true,
       currentValue: 500,
       targetValue: 500,
-      requirement: '已组建 1 个小队',
+      requirement: '',
       color: 'from-gray-400 to-gray-600',
       badgeColor: 'text-gray-500',
       benefits: 4
@@ -89,8 +89,8 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
       level: 4,
       name: '顶级喜宝',
       unlocked: false,
-      currentValue: 0,
-      targetValue: 0,
+      currentValue: currentUser.currentScore,
+      targetValue: currentUser.nextThreshold,
       requirement: '成长值满5000可升级',
       color: 'from-purple-400 via-pink-500 to-red-500',
       badgeColor: 'text-purple-500',
@@ -210,11 +210,11 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
                       <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-2xl" />
                     )}
 
-                    <div className="relative flex items-start justify-between">
-                      {/* 左侧内容 */}
-                      <div className="flex-1">
+                    <div className="relative">
+                      {/* 顶部：标题 + 徽章 */}
+                      <div className="flex items-start justify-between mb-4">
                         {/* 等级标题 */}
-                        <div className="mb-6">
+                        <div>
                           <div className={`text-[32px] mb-2 bg-gradient-to-r ${card.color} bg-clip-text text-transparent transform -rotate-3`} style={{ fontWeight: 900 }}>
                             Lv.{card.level}
                           </div>
@@ -226,91 +226,102 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
                           </div>
                         </div>
 
-                        {/* 进度信息 / 当前成长值信息 */}
-                        <div className="space-y-2">
-                          {card.level === currentUser.level ? (
-                            <div
-                              className="bg-white/10 rounded-xl p-3 cursor-pointer active:scale-[0.98] transition-transform -mx-1"
-                              onClick={onNavigateToGrowthDetail}
-                            >
-                              <div className="flex items-center justify-between mb-1.5">
-                                <span className="text-[13px] text-white/80" style={{ fontWeight: 500 }}>
-                                  当前成长值
-                                </span>
-                              </div>
-                              <div className="flex items-baseline gap-2 mb-1.5">
-                                <span className="text-[22px] text-white" style={{ fontWeight: 700 }}>
-                                  {currentUser.currentScore.toLocaleString()}
-                                </span>
-                                {!currentUser.isMaxLevel && (
-                                  <>
-                                    <span className="text-[13px] text-white/70">/</span>
-                                    <span className="text-[16px] text-white/80" style={{ fontWeight: 500 }}>
-                                      {currentUser.nextThreshold.toLocaleString()}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                              {!currentUser.isMaxLevel && (
-                                <div className="flex items-center justify-between mt-1">
-                                  <div className="flex-1 bg-white/20 rounded-full h-1.5 overflow-hidden mr-2">
-                                    <div
-                                      className="h-full bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 transition-all duration-500"
-                                      style={{ width: `${(currentUser.currentScore / currentUser.nextThreshold) * 100}%` }}
-                                    />
-                                  </div>
-                                  <span className="text-[11px] text-white/80">
-                                    还需 {currentUser.nextThreshold - currentUser.currentScore} 成长值升级
-                                  </span>
+                        {/* 右侧徽章 */}
+                        <div className="ml-4 flex-shrink-0">
+                          <div className="relative w-24 h-24">
+                            {/* 发光圆环 */}
+                            {card.unlocked && (
+                              <div className={`absolute inset-0 bg-gradient-to-br ${card.color} rounded-full blur-xl opacity-50 animate-pulse`} />
+                            )}
+                            {/* 徽章 */}
+                            <div className={`relative w-24 h-24 rounded-full bg-gradient-to-br ${card.color} flex items-center justify-center shadow-2xl border-4 border-white/30`}>
+                              <Crown className={`w-12 h-12 ${card.unlocked ? 'text-white' : 'text-white/30'}`} strokeWidth={2.5} />
+                              {!card.unlocked && (
+                                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
+                                  <Lock className="w-8 h-8 text-white" />
                                 </div>
                               )}
-                              <div className="mt-2 flex items-center justify-between text-[11px] text-white/70">
-                                <span>等级有效期</span>
-                                <span style={{ fontWeight: 500 }}>{currentUser.validUntil}</span>
-                              </div>
                             </div>
-                          ) : (
-                            <>
-                              {card.requirement && (
-                                <div className="text-white/90 text-[13px] leading-relaxed">
-                                  {card.requirement}
-                                </div>
-                              )}
-                              {!card.unlocked && card.requirement && (
-                                <div className="bg-white/10 rounded-full h-2 overflow-hidden">
-                                  <div
-                                    className="h-full bg-gradient-to-r from-yellow-400 to-orange-400 transition-all duration-500"
-                                    style={{ width: `${(card.currentValue / card.targetValue) * 100}%` }}
-                                  />
-                                </div>
-                              )}
-                              {!card.unlocked && card.requirement && (
-                                <div className="text-white/70 text-[11px]">
-                                  {card.currentValue} / {card.targetValue}
-                                </div>
-                              )}
-                            </>
-                          )}
+                          </div>
                         </div>
                       </div>
 
-                      {/* 右侧徽章 */}
-                      <div className="ml-4 flex-shrink-0">
-                        <div className="relative w-24 h-24">
-                          {/* 发光圆环 */}
-                          {card.unlocked && (
-                            <div className={`absolute inset-0 bg-gradient-to-br ${card.color} rounded-full blur-xl opacity-50 animate-pulse`} />
-                          )}
-                          {/* 徽章 */}
-                          <div className={`relative w-24 h-24 rounded-full bg-gradient-to-br ${card.color} flex items-center justify-center shadow-2xl border-4 border-white/30`}>
-                            <Crown className={`w-12 h-12 ${card.unlocked ? 'text-white' : 'text-white/30'}`} strokeWidth={2.5} />
-                            {!card.unlocked && (
-                              <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
-                                <Lock className="w-8 h-8 text-white" />
+                      {/* 底部：进度信息 / 当前成长值信息（整卡片通栏） */}
+                      <div className="space-y-2">
+                        {card.level === currentUser.level ? (
+                          <div
+                            className="bg-white/10 rounded-xl px-4 py-3 cursor-pointer active:scale-[0.98] transition-transform w-full"
+                            onClick={onNavigateToGrowthDetail}
+                          >
+                            <div className="flex items-center justify-between mb-1.5">
+                              <span className="text-[13px] text-white/80" style={{ fontWeight: 500 }}>
+                                当前成长值
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onNavigateToGrowthDetail?.();
+                                }}
+                                className="px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-[11px] text-white/90 leading-none active:scale-95 transition-transform"
+                                style={{ fontWeight: 500 }}
+                              >
+                                成长值明细
+                              </button>
+                            </div>
+                            <div className="flex items-baseline gap-2 mb-1.5">
+                              <span className="text-[22px] text-white" style={{ fontWeight: 700 }}>
+                                {currentUser.currentScore.toLocaleString()}
+                              </span>
+                              {!currentUser.isMaxLevel && (
+                                <>
+                                  <span className="text-[13px] text-white/70">/</span>
+                                  <span className="text-[16px] text-white/80" style={{ fontWeight: 500 }}>
+                                    {currentUser.nextThreshold.toLocaleString()}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            {!currentUser.isMaxLevel && (
+                              <div className="flex items-center justify-between mt-1">
+                                <div className="flex-1 bg-white/20 rounded-full h-1.5 overflow-hidden mr-2">
+                                  <div
+                                    className="h-full bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 transition-all duration-500"
+                                    style={{ width: `${(currentUser.currentScore / currentUser.nextThreshold) * 100}%` }}
+                                  />
+                                </div>
+                                <span className="text-[11px] text-white/80">
+                                  还需 {currentUser.nextThreshold - currentUser.currentScore} 成长值升级
+                                </span>
                               </div>
                             )}
+                            <div className="mt-2 flex items-center justify-between text-[11px] text-white/70">
+                              <span>等级有效期</span>
+                              <span style={{ fontWeight: 500 }}>{currentUser.validUntil}</span>
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          <>
+                            {card.requirement && (
+                              <div className="text-white/90 text-[13px] leading-relaxed">
+                                {card.requirement}
+                              </div>
+                            )}
+                            {!card.unlocked && card.requirement && (
+                              <div className="bg-white/10 rounded-full h-2 overflow-hidden">
+                                <div
+                                  className="h-full bg-gradient-to-r from-yellow-400 to-orange-400 transition-all duration-500"
+                                  style={{ width: `${card.targetValue ? (card.currentValue / card.targetValue) * 100 : 0}%` }}
+                                />
+                              </div>
+                            )}
+                            {!card.unlocked && card.requirement && (
+                              <div className="text-white/70 text-[11px]">
+                                {card.currentValue} / {card.targetValue}
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
