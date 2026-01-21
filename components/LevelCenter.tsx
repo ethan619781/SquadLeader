@@ -6,6 +6,7 @@ interface LevelCenterProps {
   onNavigateToRules: () => void;
   onShowDeveloping: () => void;
   onNavigateToGrowthDetail?: () => void;
+  onNavigateToBenefitDetail?: (benefitId: number, level: number) => void;
 }
 
 interface LevelCard {
@@ -37,7 +38,7 @@ interface CurrentUser {
   isMaxLevel: boolean;
 }
 
-export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowDeveloping, onNavigateToGrowthDetail }: LevelCenterProps) {
+export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowDeveloping, onNavigateToGrowthDetail, onNavigateToBenefitDetail }: LevelCenterProps) {
   const [currentCardIndex, setCurrentCardIndex] = useState(2); // 默认显示Lv.3当前等级
 
   // 用户当前状态数据
@@ -372,7 +373,13 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
           <h2 className="text-[18px] text-gray-900" style={{ fontWeight: 700 }}>
             Lv.{currentCard.level} 解锁 {currentCard.benefits} 项权益
           </h2>
-          <ChevronRight className="w-5 h-5 text-gray-400" />
+          <button
+            type="button"
+            onClick={() => onNavigateToBenefitDetail?.(1, currentCard.level)}
+            className="flex items-center text-gray-400 active:scale-95 transition-transform"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
 
         {/* 权益宫格 */}
@@ -380,7 +387,7 @@ export default function LevelCenter({ onNavigateBack, onNavigateToRules, onShowD
           {benefits.map((benefit) => (
             <button
               key={benefit.id}
-              onClick={benefit.unlocked ? onShowDeveloping : undefined}
+              onClick={() => onNavigateToBenefitDetail?.(benefit.id, currentCard.level)}
               className="flex flex-col items-center gap-2"
             >
               <div className={`relative w-14 h-14 rounded-full flex items-center justify-center ${

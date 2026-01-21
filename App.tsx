@@ -19,8 +19,30 @@ import PKTeamDetail from './components/PKTeamDetail';
 import LevelCenter from './components/LevelCenter';
 import LevelRules from './components/LevelRules';
 import GrowthDetail from './components/GrowthDetail';
+import BenefitDetail from './components/BenefitDetail';
 
-type PageType = 'home' | 'submit-ticket' | 'appeal-list' | 'appeal-detail' | 'team-recruitment' | 'team-application' | 'review-pending' | 'review-rejected' | 'team-leader' | 'task-list' | 'task-detail' | 'team-detail' | 'team-data' | 'pk-event-list' | 'pk-event-detail' | 'pk-ranking' | 'pk-team-detail' | 'level-center' | 'level-rules' | 'growth-detail';
+type PageType =
+  | 'home'
+  | 'submit-ticket'
+  | 'appeal-list'
+  | 'appeal-detail'
+  | 'team-recruitment'
+  | 'team-application'
+  | 'review-pending'
+  | 'review-rejected'
+  | 'team-leader'
+  | 'task-list'
+  | 'task-detail'
+  | 'team-detail'
+  | 'team-data'
+  | 'pk-event-list'
+  | 'pk-event-detail'
+  | 'pk-ranking'
+  | 'pk-team-detail'
+  | 'level-center'
+  | 'level-rules'
+  | 'growth-detail'
+  | 'benefit-detail';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
@@ -33,6 +55,8 @@ export default function App() {
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   // 任务相关状态
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [selectedBenefitId, setSelectedBenefitId] = useState<number | null>(null);
+  const [selectedBenefitLevel, setSelectedBenefitLevel] = useState<number>(3);
 
   // 小队长申请状态：'none' | 'pending' | 'rejected' | 'approved'
   const [teamApplicationStatus, setTeamApplicationStatus] = useState<'none' | 'pending' | 'rejected' | 'approved'>('none');
@@ -249,6 +273,16 @@ export default function App() {
     setCurrentPage('level-center');
   };
 
+  const navigateToBenefitDetail = (benefitId: number, level: number) => {
+    setSelectedBenefitId(benefitId);
+    setSelectedBenefitLevel(level);
+    setCurrentPage('benefit-detail');
+  };
+
+  const navigateBackFromBenefitDetail = () => {
+    setCurrentPage('level-center');
+  };
+
   return (
     <div className="phone-simulator-wrapper">
       <div className="phone-simulator">
@@ -384,6 +418,7 @@ export default function App() {
           onNavigateToRules={navigateToLevelRules}
           onShowDeveloping={showDevelopingToast}
           onNavigateToGrowthDetail={navigateToGrowthDetail}
+          onNavigateToBenefitDetail={navigateToBenefitDetail}
         />
       )}
       {currentPage === 'level-rules' && (
@@ -394,6 +429,13 @@ export default function App() {
       {currentPage === 'growth-detail' && (
         <GrowthDetail
           onNavigateBack={navigateBackFromGrowthDetail}
+        />
+      )}
+      {currentPage === 'benefit-detail' && (
+        <BenefitDetail
+          onNavigateBack={navigateBackFromBenefitDetail}
+          initialBenefitId={selectedBenefitId ?? undefined}
+          currentLevel={selectedBenefitLevel}
         />
       )}
         </div>

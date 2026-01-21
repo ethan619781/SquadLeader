@@ -39,7 +39,7 @@ export default function GrowthDetail({ onNavigateBack }: GrowthDetailProps) {
     const history: MonthlyGrowth[] = [];
     const now = new Date();
     
-    // 生成近13个月的数据
+    // 生成近13个月的数据（先按时间顺序生成）
     for (let i = 12; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -105,7 +105,8 @@ export default function GrowthDetail({ onNavigateBack }: GrowthDetailProps) {
       });
     }
     
-    return history;
+    // 按月份倒序（最新月份在最上面）
+    return history.reverse();
   };
 
   const growthHistory = useMemo(() => generateGrowthHistory(), []);
