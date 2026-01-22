@@ -20,6 +20,7 @@ import LevelCenter from './components/LevelCenter';
 import LevelRules from './components/LevelRules';
 import GrowthDetail from './components/GrowthDetail';
 import BenefitDetail from './components/BenefitDetail';
+import TeamChatPage from './components/TeamChatPage';
 
 type PageType =
   | 'home'
@@ -42,7 +43,8 @@ type PageType =
   | 'level-center'
   | 'level-rules'
   | 'growth-detail'
-  | 'benefit-detail';
+  | 'benefit-detail'
+  | 'team-chat';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
@@ -57,6 +59,7 @@ export default function App() {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [selectedBenefitId, setSelectedBenefitId] = useState<number | null>(null);
   const [selectedBenefitLevel, setSelectedBenefitLevel] = useState<number>(3);
+  const [teamChatInfo, setTeamChatInfo] = useState<{ teamName: string; teamMemberCount: number } | null>(null);
 
   // 小队长申请状态：'none' | 'pending' | 'rejected' | 'approved'
   const [teamApplicationStatus, setTeamApplicationStatus] = useState<'none' | 'pending' | 'rejected' | 'approved'>('none');
@@ -283,6 +286,15 @@ export default function App() {
     setCurrentPage('level-center');
   };
 
+  const navigateToTeamChat = (teamName: string, teamMemberCount: number) => {
+    setTeamChatInfo({ teamName, teamMemberCount });
+    setCurrentPage('team-chat');
+  };
+
+  const navigateBackFromTeamChat = () => {
+    setCurrentPage('team-leader');
+  };
+
   return (
     <div className="phone-simulator-wrapper">
       <div className="phone-simulator">
@@ -355,6 +367,7 @@ export default function App() {
           onNavigateToTeamData={navigateToTeamDataFromLeader}
           onNavigateToPKList={navigateToPKEventList}
           onNavigateToLevelCenter={navigateToLevelCenter}
+          onNavigateToTeamChat={navigateToTeamChat}
           onShowDeveloping={showDevelopingToast}
         />
       )}
@@ -436,6 +449,13 @@ export default function App() {
           onNavigateBack={navigateBackFromBenefitDetail}
           initialBenefitId={selectedBenefitId ?? undefined}
           currentLevel={selectedBenefitLevel}
+        />
+      )}
+      {currentPage === 'team-chat' && teamChatInfo && (
+        <TeamChatPage
+          onNavigateBack={navigateBackFromTeamChat}
+          teamName={teamChatInfo.teamName}
+          teamMemberCount={teamChatInfo.teamMemberCount}
         />
       )}
         </div>

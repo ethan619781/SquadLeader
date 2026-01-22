@@ -1,4 +1,4 @@
-import { ChevronLeft, MoreHorizontal, ChevronRight, BarChart3, Users, Trophy } from 'lucide-react';
+import { ChevronLeft, MoreHorizontal, ChevronRight, BarChart3, Users, Trophy, MessageCircle } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface TeamLeaderPageProps {
@@ -8,10 +8,11 @@ interface TeamLeaderPageProps {
   onNavigateToTeamData: () => void;
   onNavigateToPKList: () => void;
   onNavigateToLevelCenter: () => void;
+  onNavigateToTeamChat?: (teamName: string, teamMemberCount: number) => void;
   onShowDeveloping: () => void;
 }
 
-export default function TeamLeaderPage({ onNavigateToHome, onNavigateToTaskList, onNavigateToTeamDetail, onNavigateToTeamData, onNavigateToPKList, onNavigateToLevelCenter, onShowDeveloping }: TeamLeaderPageProps) {
+export default function TeamLeaderPage({ onNavigateToHome, onNavigateToTaskList, onNavigateToTeamDetail, onNavigateToTeamData, onNavigateToPKList, onNavigateToLevelCenter, onNavigateToTeamChat, onShowDeveloping }: TeamLeaderPageProps) {
   // 模拟数据
   const leaderStats = {
     name: '张队长',
@@ -167,14 +168,23 @@ export default function TeamLeaderPage({ onNavigateToHome, onNavigateToTaskList,
           <div className="space-y-3">
             {myTeams.map((team) => (
               <div key={team.id} className="bg-white rounded-xl p-4 shadow-sm">
-                {/* 顶部：小队名称 + 人数 */}
+                {/* 顶部：小队名称 + 人数 + 群聊按钮 */}
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[15px]" style={{ fontWeight: 600 }}>
                     {team.name}
                   </span>
-                  <span className="bg-gray-100 text-gray-600 text-[12px] px-2 py-1 rounded" style={{ fontWeight: 500 }}>
-                    {team.currentMembers}/{team.maxMembers}人
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-gray-100 text-gray-600 text-[12px] px-2 py-1 rounded" style={{ fontWeight: 500 }}>
+                      {team.currentMembers}/{team.maxMembers}人
+                    </span>
+                    <button 
+                      onClick={() => onNavigateToTeamChat?.(team.name, team.currentMembers)}
+                      className="flex items-center justify-center gap-1 px-2 py-1 bg-gray-50 rounded text-gray-700 text-[12px] hover:bg-gray-100 transition-colors border border-gray-200"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
+                      <span style={{ fontWeight: 500 }}>进入群聊</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* 中间：核心数据 */}
