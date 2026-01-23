@@ -21,6 +21,13 @@ import LevelRules from './components/LevelRules';
 import GrowthDetail from './components/GrowthDetail';
 import BenefitDetail from './components/BenefitDetail';
 import TeamChatPage from './components/TeamChatPage';
+import CommissionFreeCardList from './components/CommissionFreeCardList';
+import CommissionFreeCardDetail from './components/CommissionFreeCardDetail';
+import OrderConfirm from './components/OrderConfirm';
+import PaymentSuccess from './components/PaymentSuccess';
+import OrderDetail from './components/OrderDetail';
+import MyPage from './components/MyPage';
+import MyOrderList from './components/MyOrderList';
 
 type PageType =
   | 'home'
@@ -44,7 +51,14 @@ type PageType =
   | 'level-rules'
   | 'growth-detail'
   | 'benefit-detail'
-  | 'team-chat';
+  | 'team-chat'
+  | 'commission-free-card-list'
+  | 'commission-free-card-detail'
+  | 'order-confirm'
+  | 'payment-success'
+  | 'order-detail'
+  | 'my-page'
+  | 'my-order-list';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
@@ -60,6 +74,10 @@ export default function App() {
   const [selectedBenefitId, setSelectedBenefitId] = useState<number | null>(null);
   const [selectedBenefitLevel, setSelectedBenefitLevel] = useState<number>(3);
   const [teamChatInfo, setTeamChatInfo] = useState<{ teamName: string; teamMemberCount: number } | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
+  const [orderData, setOrderData] = useState<any>(null);
+  const [orderId, setOrderId] = useState<string>('');
+  const [orderListTab, setOrderListTab] = useState<string>('全部');
 
   // 小队长申请状态：'none' | 'pending' | 'rejected' | 'approved'
   const [teamApplicationStatus, setTeamApplicationStatus] = useState<'none' | 'pending' | 'rejected' | 'approved'>('none');
@@ -295,6 +313,79 @@ export default function App() {
     setCurrentPage('team-leader');
   };
 
+  const navigateToCommissionFreeCardList = () => {
+    setCurrentPage('commission-free-card-list');
+  };
+
+  const navigateBackFromCardList = () => {
+    setCurrentPage('home');
+  };
+
+  const navigateToCardDetail = (cardId: number) => {
+    setSelectedCardId(cardId);
+    setCurrentPage('commission-free-card-detail');
+  };
+
+  const navigateBackFromCardDetail = () => {
+    setCurrentPage('commission-free-card-list');
+  };
+
+  const navigateToOrderConfirm = (cardId: number) => {
+    setSelectedCardId(cardId);
+    setCurrentPage('order-confirm');
+  };
+
+  const navigateBackFromOrderConfirm = () => {
+    setCurrentPage('commission-free-card-detail');
+  };
+
+  const navigateToPayment = (orderData: any) => {
+    setOrderData(orderData);
+    // 模拟支付成功，生成订单ID
+    const newOrderId = Date.now().toString();
+    setOrderId(newOrderId);
+    setCurrentPage('payment-success');
+  };
+
+  const navigateToOrderDetail = (orderId: string) => {
+    setOrderId(orderId);
+    setCurrentPage('order-detail');
+  };
+
+  const navigateBackFromOrderDetail = () => {
+    // 从订单详情返回时，根据来源页面决定返回哪里
+    if (currentPage === 'order-detail') {
+      // 如果当前在订单详情页，返回订单列表
+      setCurrentPage('my-order-list');
+    } else {
+      setCurrentPage('commission-free-card-list');
+    }
+  };
+
+  const navigateToMyPage = () => {
+    setCurrentPage('my-page');
+  };
+
+  const navigateToMyOrderList = (tab?: string) => {
+    if (tab) {
+      setOrderListTab(tab);
+    }
+    setCurrentPage('my-order-list');
+  };
+
+  const navigateBackFromMyOrderList = () => {
+    setCurrentPage('my-page');
+  };
+
+  const navigateToOrderDetailFromList = (orderId: string) => {
+    setOrderId(orderId);
+    setCurrentPage('order-detail');
+  };
+
+  const navigateBackFromPaymentSuccess = () => {
+    setCurrentPage('commission-free-card-list');
+  };
+
   return (
     <div className="phone-simulator-wrapper">
       <div className="phone-simulator">
@@ -304,6 +395,8 @@ export default function App() {
           onNavigateToSubmitTicket={navigateToSubmitTicket}
           onNavigateToAppealList={navigateToAppealList}
           onNavigateToTeamRecruitment={navigateToTeamRecruitment}
+          onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList}
+          onNavigateToMyPage={navigateToMyPage}
           onShowDeveloping={showDevelopingToast}
         />
       )}
@@ -456,6 +549,68 @@ export default function App() {
           onNavigateBack={navigateBackFromTeamChat}
           teamName={teamChatInfo.teamName}
           teamMemberCount={teamChatInfo.teamMemberCount}
+        />
+      )}
+      {currentPage === 'commission-free-card-list' && (
+        <CommissionFreeCardList
+          onNavigateBack={navigateBackFromCardList}
+          onNavigateToDetail={navigateToCardDetail}
+          onNavigateToHome={navigateToHome}
+          onNavigateToTeamRecruitment={navigateToTeamRecruitment}
+          onNavigateToMyPage={navigateToMyPage}
+          onShowDeveloping={showDevelopingToast}
+        />
+      )}
+      {currentPage === 'commission-free-card-detail' && selectedCardId && (
+        <CommissionFreeCardDetail
+          onNavigateBack={navigateBackFromCardDetail}
+          onNavigateToOrderConfirm={navigateToOrderConfirm}
+          cardId={selectedCardId}
+        />
+      )}
+      {currentPage === 'order-confirm' && selectedCardId && (
+        <OrderConfirm
+          onNavigateBack={navigateBackFromOrderConfirm}
+          onNavigateToPayment={navigateToPayment}
+          cardId={selectedCardId}
+        />
+      )}
+      {currentPage === 'payment-success' && orderId && (
+        <PaymentSuccess
+          onNavigateToCardList={navigateBackFromPaymentSuccess}
+          onNavigateToOrderDetail={navigateToOrderDetail}
+          orderId={orderId}
+        />
+      )}
+      {currentPage === 'order-detail' && orderId && (
+        <OrderDetail
+          onNavigateBack={navigateBackFromOrderDetail}
+          onNavigateToPayment={(orderId) => {
+            // 从订单详情跳转到支付（模拟）
+            setOrderId(orderId);
+            setCurrentPage('payment-success');
+          }}
+          onShowCancelModal={showDevelopingToast}
+          onShowConfirmReceipt={showDevelopingToast}
+          orderId={orderId}
+        />
+      )}
+      {currentPage === 'my-page' && (
+        <MyPage
+          onNavigateToOrderList={navigateToMyOrderList}
+          onNavigateToAppealList={navigateToAppealList}
+          onNavigateToSubmitTicket={navigateToSubmitTicket}
+          onNavigateToHome={navigateToHome}
+          onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList}
+          onNavigateToTeamRecruitment={navigateToTeamRecruitment}
+          onShowDeveloping={showDevelopingToast}
+        />
+      )}
+      {currentPage === 'my-order-list' && (
+        <MyOrderList
+          onNavigateBack={navigateBackFromMyOrderList}
+          onNavigateToOrderDetail={navigateToOrderDetailFromList}
+          initialTab={orderListTab}
         />
       )}
         </div>

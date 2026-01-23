@@ -234,13 +234,13 @@ export default function TeamData({ onNavigateBack, onShowDeveloping }: TeamDataP
   };
 
   return (
-    <div className="w-full w-full min-h-screen bg-[#F5F5F5]">
+    <div className="w-full w-full min-h-screen bg-[#F4F4F4]">
       {/* 顶部导航栏 */}
-      <div className="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+      <div className="bg-[#FFC300] px-4 py-3 flex items-center justify-between sticky top-0 z-20">
         <button onClick={onNavigateBack} className="p-1">
-          <ChevronLeft className="w-6 h-6" strokeWidth={2} />
+          <ChevronLeft className="w-6 h-6 text-[#1A1A1A]" strokeWidth={2} />
         </button>
-        <span className="text-[17px]" style={{ fontWeight: 600 }}>小队数据</span>
+        <span className="text-[18px] text-[#1A1A1A]" style={{ fontWeight: 600 }}>小队数据</span>
         <div className="w-6" />
       </div>
 

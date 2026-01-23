@@ -119,17 +119,17 @@ export default function TeamChatPage({ onNavigateBack, teamName, teamMemberCount
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#F5F5F5] flex flex-col">
+    <div className="w-full min-h-screen bg-[#F4F4F4] flex flex-col">
       {/* 顶部导航栏 */}
-      <div className="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+      <div className="bg-[#FFC300] px-4 py-3 flex items-center justify-between sticky top-0 z-20">
         <ChevronLeft 
-          className="w-6 h-6 cursor-pointer" 
+          className="w-6 h-6 cursor-pointer text-[#1A1A1A]" 
           onClick={onNavigateBack}
         />
-        <span className="text-[17px] flex-1 text-center" style={{ fontWeight: 600 }}>
+        <span className="text-[18px] flex-1 text-center text-[#1A1A1A]" style={{ fontWeight: 600 }}>
           {teamName} ({teamMemberCount})
         </span>
-        <MoreVertical className="w-5 h-5 text-gray-600 cursor-pointer" />
+        <MoreVertical className="w-5 h-5 text-[#1A1A1A] cursor-pointer" />
       </div>
 
       {/* 消息列表区 */}

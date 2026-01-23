@@ -6,10 +6,12 @@ interface HomePageProps {
   onNavigateToSubmitTicket: () => void;
   onNavigateToAppealList: (tab?: string) => void;
   onNavigateToTeamRecruitment: () => void;
+  onNavigateToCommissionFreeCardList?: () => void;
+  onNavigateToMyPage?: () => void;
   onShowDeveloping: () => void;
 }
 
-export default function HomePage({ onNavigateToSubmitTicket, onNavigateToAppealList, onNavigateToTeamRecruitment, onShowDeveloping }: HomePageProps) {
+export default function HomePage({ onNavigateToSubmitTicket, onNavigateToAppealList, onNavigateToTeamRecruitment, onNavigateToCommissionFreeCardList, onNavigateToMyPage, onShowDeveloping }: HomePageProps) {
   const [currentCity, setCurrentCity] = useState('杭州');
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -231,24 +233,20 @@ export default function HomePage({ onNavigateToSubmitTicket, onNavigateToAppealL
 
       {/* 底部导航 */}
       <div className="bottom-navigation-bar">
-        <div className="w-full grid grid-cols-5 h-[60px]">
+        <div className="w-full grid grid-cols-4 h-[60px]">
           <button className="flex flex-col items-center justify-center gap-1">
             <div className="w-6 h-6 bg-yellow-400 rounded-lg" />
             <span className="text-[11px] text-yellow-600">首页</span>
           </button>
-          <button className="flex flex-col items-center justify-center gap-1" onClick={onShowDeveloping}>
+          <button className="flex flex-col items-center justify-center gap-1" onClick={onNavigateToCommissionFreeCardList}>
             <div className="w-6 h-6 bg-gray-300 rounded-lg" />
             <span className="text-[11px] text-gray-500">免佣卡</span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1" onClick={onShowDeveloping}>
-            <div className="w-6 h-6 bg-gray-300 rounded-lg" />
-            <span className="text-[11px] text-gray-500">福利</span>
           </button>
           <button className="flex flex-col items-center justify-center gap-1" onClick={onNavigateToTeamRecruitment}>
             <div className="w-6 h-6 bg-gray-300 rounded-lg" />
             <span className="text-[11px] text-gray-500">小队</span>
           </button>
-          <button className="flex flex-col items-center justify-center gap-1" onClick={onShowDeveloping}>
+          <button className="flex flex-col items-center justify-center gap-1" onClick={onNavigateToMyPage}>
             <div className="w-6 h-6 bg-gray-300 rounded-lg" />
             <span className="text-[11px] text-gray-500">我的</span>
           </button>
