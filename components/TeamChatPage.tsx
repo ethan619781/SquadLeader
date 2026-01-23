@@ -98,8 +98,7 @@ export default function TeamChatPage({ onNavigateBack, teamName, teamMemberCount
       senderName: '我',
       senderAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwb3J0cmFpdHxlbnwxfHx8fDE3Njg2MzQ2NzV8MA&ixlib=rb-4.1.0&q=80&w=200',
       isMe: true,
-      timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-      content: label
+      timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
     };
 
     setMessages([...messages, newMessage]);
@@ -286,7 +285,7 @@ export default function TeamChatPage({ onNavigateBack, teamName, teamMemberCount
 
               <button
                 type="button"
-                onClick={() => handleSendMedia('text', '位置')}
+                onClick={() => handleSendMedia('image', '位置')}
                 className="flex flex-col items-center gap-2 py-3 active:scale-95 transition-transform"
               >
                 <div className="w-14 h-14 bg-orange-100 rounded-lg flex items-center justify-center">
