@@ -29,14 +29,6 @@ export default function TaskList({ onNavigateBack, onNavigateToTaskDetail, onSho
   // 模拟任务数据
   const allTasks: Task[] = [
     {
-      id: 1,
-      name: '邀请好友注册',
-      deadline: '2026-01-25 23:59',
-      reward: 50,
-      status: '待执行',
-      type: 'personal'
-    },
-    {
       id: 2,
       name: '朋友圈宣传打卡',
       deadline: '2026-01-20 23:59',
@@ -46,35 +38,11 @@ export default function TaskList({ onNavigateBack, onNavigateToTaskDetail, onSho
       type: 'personal'
     },
     {
-      id: 3,
-      name: '新司机招募任务',
-      deadline: '2026-01-18 23:59',
-      reward: 100,
-      status: '审核中',
-      type: 'personal'
-    },
-    {
-      id: 4,
-      name: '新手培训签到',
-      deadline: '2026-01-15 23:59',
-      reward: 30,
-      status: '已完成',
-      type: 'personal'
-    },
-    {
       id: 5,
       name: '服务质量提升',
       deadline: '2026-01-10 23:59',
       reward: 40,
       status: '已过期',
-      type: 'personal'
-    },
-    {
-      id: 6,
-      name: '小队建设任务',
-      deadline: '2026-01-22 23:59',
-      reward: 80,
-      status: '待执行',
       type: 'personal'
     },
     {

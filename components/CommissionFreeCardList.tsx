@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ChevronDown, MoreHorizontal, ArrowUpDown } from 'lucide-react';
+import { ChevronDown, ArrowUpDown } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface CommissionFreeCardListProps {
@@ -129,14 +129,10 @@ export default function CommissionFreeCardList({
   return (
     <div className="w-full min-h-screen bg-[#F4F4F4] page-content-with-bottom-bar">
       {/* 顶部导航栏 */}
-      <div className="bg-[#FFC300] px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+      <div className="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-1" onClick={() => setShowCitySelector(!showCitySelector)}>
           <span className="text-[18px] text-[#1A1A1A]" style={{ fontWeight: 600 }}>{currentCity}</span>
           <ChevronDown className="w-4 h-4 text-[#1A1A1A]" />
-        </div>
-        <div className="flex items-center gap-3">
-          <MoreHorizontal className="w-5 h-5 text-[#1A1A1A]" />
-          <div className="w-6 h-6 border-2 border-[#1A1A1A] rounded-full" />
         </div>
       </div>
 

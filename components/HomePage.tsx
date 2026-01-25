@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface HomePageProps {
@@ -67,10 +67,6 @@ export default function HomePage({ onNavigateToSubmitTicket, onNavigateToAppealL
           <div className="flex items-center gap-1" onClick={onShowDeveloping}>
             <span className="text-[17px]">{currentCity}</span>
             <ChevronDown className="w-4 h-4" />
-          </div>
-          <div className="flex items-center gap-4">
-            <MoreHorizontal className="w-5 h-5" onClick={onShowDeveloping} />
-            <div className="w-6 h-6 border-2 border-black rounded-full" onClick={onShowDeveloping} />
           </div>
         </div>
       </div>

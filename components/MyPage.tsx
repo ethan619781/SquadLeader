@@ -45,12 +45,8 @@ export default function MyPage({ onNavigateToOrderList, onNavigateToAppealList, 
   return (
     <div className="w-full min-h-screen bg-[#F4F4F4] page-content-with-bottom-bar">
       {/* 顶部导航栏 - 品牌黄 Header */}
-      <div className="bg-[#FFC300] px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+      <div className="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-10">
         <div className="flex-1" />
-        <div className="flex items-center gap-3">
-          <div className="w-6 h-6 border-2 border-[#1A1A1A] rounded-full" />
-          <Settings className="w-5 h-5 text-[#1A1A1A]" onClick={onShowDeveloping} />
-        </div>
       </div>
 
       {/* 用户信息卡片（不展示等级进度） */}
@@ -218,20 +214,20 @@ export default function MyPage({ onNavigateToOrderList, onNavigateToAppealList, 
             <span className="text-[#999999]">&gt;</span>
           </button>
         </div>
-        <div className="flex items-center gap-6">
-          <div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="flex flex-col items-center text-center">
             <div className="text-[18px] text-[#111111] mb-1" style={{ fontWeight: 700 }}>
               {appealStats.pending}
             </div>
             <div className="text-[12px] text-[#999999]">待处理</div>
           </div>
-          <div>
+          <div className="flex flex-col items-center text-center">
             <div className="text-[18px] text-[#111111] mb-1" style={{ fontWeight: 700 }}>
               {appealStats.inProgress}
             </div>
             <div className="text-[12px] text-[#999999]">处理中</div>
           </div>
-          <div>
+          <div className="flex flex-col items-center text-center">
             <div className="text-[18px] text-[#111111] mb-1" style={{ fontWeight: 700 }}>
               {appealStats.total}
             </div>
