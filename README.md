@@ -1,6 +1,3 @@
-# Figma AI 原型项目
-
-这是一个由 Figma AI 生成的 React + TypeScript 原型项目。
 
 ## 快速开始
 
