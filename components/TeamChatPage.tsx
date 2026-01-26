@@ -120,7 +120,7 @@ export default function TeamChatPage({ onNavigateBack, teamName, teamMemberCount
   return (
     <div className="w-full min-h-screen bg-[#F4F4F4] flex flex-col">
       {/* 顶部导航栏 */}
-      <div className="bg-[#FFC300] px-4 py-3 flex items-center justify-between sticky top-0 z-20">
+      <div className="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-20">
         <ChevronLeft 
           className="w-6 h-6 cursor-pointer text-[#1A1A1A]" 
           onClick={onNavigateBack}

@@ -1,4 +1,4 @@
-import { ChevronLeft, TrendingUp } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface TeamDetailProps {
@@ -167,32 +167,54 @@ export default function TeamDetail({ teamId, onNavigateBack, onNavigateToTeamDat
         <div className="mb-4">
           {/* 合并后的数据卡片 */}
           <div 
-            className="bg-white rounded-xl p-5 shadow-sm active:bg-gray-50 transition-colors"
+            className="rounded-xl shadow-md overflow-hidden active:scale-[0.99] transition-transform"
             onClick={onNavigateToTeamData}
+            style={{
+              background: 'linear-gradient(135deg, #1890FF 0%, #0066CC 100%)'
+            }}
           >
-            <div className="text-gray-500 text-[13px] mb-4">团队数据概览</div>
-            <div className="grid grid-cols-2 gap-6">
-              {/* 昨日总完单 */}
-              <div>
-                <div className="text-gray-400 text-[12px] mb-2">昨日总完单</div>
-                <div className="text-[28px] mb-2" style={{ fontWeight: 700 }}>
-                  {teamData.yesterdayOrders}
+            {/* 数据展示区 */}
+            <div className="p-5 pb-4">
+              <div className="text-white text-[13px] opacity-90 mb-4">团队数据概览</div>
+              <div className="grid grid-cols-3 gap-4">
+                {/* 昨日完单量 */}
+                <div className="text-center">
+                  <div className="text-white text-[12px] opacity-90 mb-2">昨日完单量</div>
+                  <div className="text-white text-[28px] leading-none mb-2" style={{ fontWeight: 700, fontFamily: 'DIN, -apple-system, sans-serif' }}>
+                    1,280
+                  </div>
+                  <div className="flex items-center justify-center gap-0.5 text-[10px] text-red-300 mt-1">
+                    <span>环比 -5.2%</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-0.5 text-[10px] text-green-300 mt-1">
+                    <span>同比 +12.8%</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 text-green-500 text-[12px]">
-                  <TrendingUp className="w-3.5 h-3.5" />
-                  <span>环比 +{teamData.ordersGrowth}%</span>
+                {/* 昨日流水 */}
+                <div className="text-center border-l border-r border-white/20">
+                  <div className="text-white text-[12px] opacity-90 mb-2">昨日流水(元)</div>
+                  <div className="text-white text-[28px] leading-none mb-2" style={{ fontWeight: 700, fontFamily: 'DIN, -apple-system, sans-serif' }}>
+                    35,000
+                  </div>
+                  <div className="flex items-center justify-center gap-0.5 text-[10px] text-red-300 mt-1">
+                    <span>环比 -15.0%</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-0.5 text-[10px] text-green-300 mt-1">
+                    <span>同比 +8.5%</span>
+                  </div>
                 </div>
-              </div>
-
-              {/* 昨日总流水 */}
-              <div>
-                <div className="text-gray-400 text-[12px] mb-2">昨日总流水</div>
-                <div className="text-[28px] mb-2" style={{ fontWeight: 700 }}>
-                  ¥{teamData.yesterdayRevenue}
-                </div>
-                <div className="flex items-center gap-1 text-green-500 text-[12px]">
-                  <TrendingUp className="w-3.5 h-3.5" />
-                  <span>环比 +{teamData.revenueGrowth}%</span>
+                {/* 昨日在线时长 */}
+                <div className="text-center">
+                  <div className="text-white text-[12px] opacity-90 mb-2">昨日在线时长(h)</div>
+                  <div className="text-white text-[28px] leading-none mb-2" style={{ fontWeight: 700, fontFamily: 'DIN, -apple-system, sans-serif' }}>
+                    450.5
+                  </div>
+                  <div className="flex items-center justify-center gap-0.5 text-[10px] text-red-300 mt-1">
+                    <span>环比 -3.8%</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-0.5 text-[10px] text-green-300 mt-1">
+                    <span>同比 +15.2%</span>
+                  </div>
                 </div>
               </div>
             </div>

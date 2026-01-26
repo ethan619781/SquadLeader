@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ChevronLeft, Home, MoreVertical } from 'lucide-react';
+import { ChevronLeft, Home } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface MyOrderListProps {
@@ -110,8 +110,8 @@ export default function MyOrderList({ onNavigateBack, onNavigateToOrderDetail, i
 
   return (
     <div className="w-full min-h-screen bg-[#F4F4F4]">
-      {/* 顶部导航栏 - 品牌黄 Header */}
-      <div className="bg-[#FFC300] px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+      {/* 顶部导航栏 */}
+      <div className="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-3">
           <ChevronLeft className="w-6 h-6 cursor-pointer text-[#1A1A1A]" onClick={onNavigateBack} />
           <Home className="w-5 h-5 cursor-pointer text-[#1A1A1A]" />
@@ -119,14 +119,11 @@ export default function MyOrderList({ onNavigateBack, onNavigateToOrderDetail, i
         <span className="text-[18px] flex-1 text-center text-[#1A1A1A]" style={{ fontWeight: 600 }}>
           我的订单
         </span>
-        <div className="flex items-center gap-3">
-          <MoreVertical className="w-5 h-5 text-[#1A1A1A]" />
-          <div className="w-6 h-6 border-2 border-[#1A1A1A] rounded-full" />
-        </div>
+        <div className="w-6" />
       </div>
 
       {/* Tab 标签栏 */}
-      <div className="bg-white border-b border-gray-200 sticky top-[52px] z-10 -mt-4">
+      <div className="bg-white border-b border-gray-200 sticky top-[52px] z-10">
         <div className="flex overflow-x-auto px-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}>
           {tabs.map((tab) => (
             <button
@@ -147,7 +144,7 @@ export default function MyOrderList({ onNavigateBack, onNavigateToOrderDetail, i
       </div>
 
       {/* 订单列表 */}
-      <div className="px-4 py-4">
+      <div className="px-4 pt-3 pb-4">
         {filteredOrders.length > 0 ? (
           <div className="space-y-3">
             {filteredOrders.map((order) => (

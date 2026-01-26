@@ -1,4 +1,4 @@
-import { ChevronLeft, MoreHorizontal, ChevronRight, BarChart3, Users, Trophy, MessageCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BarChart3, Users, Trophy, MessageCircle } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface TeamLeaderPageProps {
@@ -65,9 +65,7 @@ export default function TeamLeaderPage({ onNavigateToHome, onNavigateToTaskList,
           onClick={onNavigateToHome}
         />
         <span className="text-[17px]" style={{ fontWeight: 600 }}>小队长</span>
-        <div className="flex items-center gap-3">
-          <MoreHorizontal className="w-5 h-5" onClick={onShowDeveloping} />
-        </div>
+        <div className="w-6" />
       </div>
 
       {/* 主体内容 */}
