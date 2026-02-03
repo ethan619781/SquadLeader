@@ -1,6 +1,10 @@
-import { useState } from 'react';
-import { Settings, MessageCircle, Users, HelpCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Settings, MessageCircle, Users, HelpCircle, ChevronRight } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import DriverBindingPassiveModal from './DriverBindingPassiveModal';
+
+const DRIVER_BINDING_POPUP_KEY = 'driver_binding_popup';
+const DRIVER_BINDING_POPUP_MAX_PER_DAY = 2;
 
 interface MyPageProps {
   onNavigateToOrderList: (tab?: string) => void;
@@ -9,16 +13,74 @@ interface MyPageProps {
   onNavigateToHome?: () => void;
   onNavigateToCommissionFreeCardList?: () => void;
   onNavigateToTeamRecruitment?: () => void;
+  onNavigateToDriverBinding?: () => void;
   onShowDeveloping: () => void;
+  /** 是否已关联司机档案 */
+  isDriverBound?: boolean;
+  /** 关联成功回调（被动/主动关联成功后由父组件更新状态） */
+  onDriverBindingSuccess?: () => void;
+  /** 当前登录手机号（用于被动关联：后台用此号检索司机库，脱敏展示） */
+  loginPhone?: string;
+  /** 被动关联时匹配到的司机姓名脱敏（如 张*），由后台返回，未返回则不弹被动窗 */
+  matchedDriverNameHint?: string | null;
 }
 
-export default function MyPage({ onNavigateToOrderList, onNavigateToAppealList, onNavigateToSubmitTicket, onNavigateToHome, onNavigateToCommissionFreeCardList, onNavigateToTeamRecruitment, onShowDeveloping }: MyPageProps) {
-  // Mock 用户数据
+export default function MyPage({
+  onNavigateToOrderList,
+  onNavigateToAppealList,
+  onNavigateToSubmitTicket,
+  onNavigateToHome,
+  onNavigateToCommissionFreeCardList,
+  onNavigateToTeamRecruitment,
+  onNavigateToDriverBinding,
+  onShowDeveloping,
+  isDriverBound = false,
+  onDriverBindingSuccess,
+  loginPhone,
+  matchedDriverNameHint,
+}: MyPageProps) {
+  const [showPassiveModal, setShowPassiveModal] = useState(false);
+
+  // 被动关联：进入我的页面时，若未关联 + 有登录手机号 + 后台返回了匹配司机 + 今日弹窗未超限，则弹窗（展示时计入当日次数）
+  useEffect(() => {
+    if (isDriverBound || !loginPhone || !matchedDriverNameHint || showPassiveModal) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const key = `${DRIVER_BINDING_POPUP_KEY}_${today}`;
+    const count = parseInt(localStorage.getItem(key) || '0', 10);
+    if (count >= DRIVER_BINDING_POPUP_MAX_PER_DAY) return;
+    localStorage.setItem(key, String(count + 1));
+    setShowPassiveModal(true);
+  }, [isDriverBound, loginPhone, matchedDriverNameHint, showPassiveModal]);
+
+  const handlePassiveConfirm = () => {
+    setShowPassiveModal(false);
+    onDriverBindingSuccess?.();
+    showToast('关联成功');
+  };
+
+  const handlePassiveDismiss = () => {
+    setShowPassiveModal(false);
+  };
+
+  const maskPhone = (phone: string) => {
+    if (!phone || phone.length < 11) return phone;
+    return phone.slice(0, 3) + '****' + phone.slice(-4);
+  };
+
+  const showToast = (msg: string) => {
+    const el = document.createElement('div');
+    el.textContent = msg;
+    el.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:white;padding:12px 24px;border-radius:8px;z-index:9999;font-size:14px;';
+    document.body.appendChild(el);
+    setTimeout(() => document.body.removeChild(el), 2000);
+  };
+
+  // Mock 用户数据（未关联时显示“普通用户”，已关联显示昵称/小队长等）
   const userData = {
-    name: '张队长',
-    phone: '188****1234',
+    name: isDriverBound ? '张队长' : '普通用户',
+    phone: loginPhone ? maskPhone(loginPhone) : '188****1234',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwb3J0cmFpdHxlbnwxfHx8fDE3Njg2MzQ2NzV8MA&ixlib=rb-4.1.0&q=80&w=200',
-    badge: '车队长'
+    badge: isDriverBound ? '小队长' : '普通用户',
   };
 
   // Mock 订单统计数据
@@ -49,29 +111,49 @@ export default function MyPage({ onNavigateToOrderList, onNavigateToAppealList, 
         <div className="flex-1" />
       </div>
 
-      {/* 用户信息卡片（不展示等级进度） */}
-      <div className="bg-[#FFC300] mx-4 mt-4 rounded-[12px] p-4 relative overflow-hidden -mt-4">
+      {/* 用户信息卡片（普通用户时点击进入司机关联） */}
+      <div
+        className={`bg-[#FFC300] mx-4 mt-4 rounded-[12px] p-4 relative overflow-hidden -mt-4 ${!isDriverBound && onNavigateToDriverBinding ? 'active:opacity-90' : ''}`}
+        role={!isDriverBound && onNavigateToDriverBinding ? 'button' : undefined}
+        onClick={!isDriverBound && onNavigateToDriverBinding ? onNavigateToDriverBinding : undefined}
+      >
         <div className="flex items-center gap-4 relative z-10">
           <ImageWithFallback
             src={userData.avatar}
             alt={userData.name}
             className="w-16 h-16 rounded-full object-cover border-2 border-white"
           />
-          <div className="flex flex-col gap-1">
+          <div className="flex-1 flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <span className="text-[18px] text-[#1A1A1A]" style={{ fontWeight: 600 }}>
                 {userData.name}
               </span>
-              <span className="px-2 py-0.5 bg-[#FFF8D9] text-[#FF6600] text-[11px] rounded" style={{ fontWeight: 500 }}>
+              <span className={`px-2 py-0.5 text-[11px] rounded ${isDriverBound ? 'bg-[#FFF8D9] text-[#FF6600]' : 'bg-white/80 text-[#666666]'}`} style={{ fontWeight: 500 }}>
                 {userData.badge}
               </span>
             </div>
             <div className="text-[14px] text-[#333333]">
               {userData.phone}
             </div>
+            {!isDriverBound && onNavigateToDriverBinding && (
+              <div className="flex items-center gap-1 mt-1 text-[13px] text-[#666666]">
+                <span>关联司机账号</span>
+                <ChevronRight className="w-4 h-4" />
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* 被动关联弹窗：发现了您的司机档案 */}
+      {showPassiveModal && loginPhone && matchedDriverNameHint && (
+        <DriverBindingPassiveModal
+          maskedPhone={maskPhone(loginPhone)}
+          driverNameHint={matchedDriverNameHint}
+          onConfirm={handlePassiveConfirm}
+          onDismiss={handlePassiveDismiss}
+        />
+      )}
 
       {/* 我的订单卡片 */}
       <div className="bg-white mx-4 mt-4 rounded-[12px] p-4">

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useParams, useLocation, Navigate } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import SubmitTicket from './components/SubmitTicket';
 import AppealList from './components/AppealList';
@@ -28,591 +29,252 @@ import PaymentSuccess from './components/PaymentSuccess';
 import OrderDetail from './components/OrderDetail';
 import MyPage from './components/MyPage';
 import MyOrderList from './components/MyOrderList';
-
-type PageType =
-  | 'home'
-  | 'submit-ticket'
-  | 'appeal-list'
-  | 'appeal-detail'
-  | 'team-recruitment'
-  | 'team-application'
-  | 'review-pending'
-  | 'review-rejected'
-  | 'team-leader'
-  | 'task-list'
-  | 'task-detail'
-  | 'team-detail'
-  | 'team-data'
-  | 'pk-event-list'
-  | 'pk-event-detail'
-  | 'pk-ranking'
-  | 'pk-team-detail'
-  | 'level-center'
-  | 'level-rules'
-  | 'growth-detail'
-  | 'benefit-detail'
-  | 'team-chat'
-  | 'commission-free-card-list'
-  | 'commission-free-card-detail'
-  | 'order-confirm'
-  | 'payment-success'
-  | 'order-detail'
-  | 'my-page'
-  | 'my-order-list';
+import DriverBindingPage from './components/DriverBindingPage';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<PageType>('home');
-  const [selectedAppealId, setSelectedAppealId] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Tab / 列表状态（与 URL searchParams 可后续同步）
   const [appealListTab, setAppealListTab] = useState<string>('全部');
-  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
+  const [orderListTab, setOrderListTab] = useState<string>('全部');
   // 记录进入小队数据页面的来源页面
   const [teamDataSource, setTeamDataSource] = useState<'team-leader' | 'team-detail'>('team-detail');
-  // PK赛事相关状态
-  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
-  // 任务相关状态
-  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
-  const [selectedBenefitId, setSelectedBenefitId] = useState<number | null>(null);
-  const [selectedBenefitLevel, setSelectedBenefitLevel] = useState<number>(3);
-  const [teamChatInfo, setTeamChatInfo] = useState<{ teamName: string; teamMemberCount: number } | null>(null);
-  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
   const [orderData, setOrderData] = useState<any>(null);
-  const [orderId, setOrderId] = useState<string>('');
-  const [orderListTab, setOrderListTab] = useState<string>('全部');
 
   // 小队长申请状态：'none' | 'pending' | 'rejected' | 'approved'
   const [teamApplicationStatus, setTeamApplicationStatus] = useState<'none' | 'pending' | 'rejected' | 'approved'>('none');
-  // 是否已绑定司机账号
   const [isDriverBound, setIsDriverBound] = useState(false);
-  // 演示模式：是否已成为小队长
   const [isLeaderMode, setIsLeaderMode] = useState(false);
 
-  const navigateToSubmitTicket = () => {
-    setCurrentPage('submit-ticket');
-  };
-
-  const navigateToHome = () => {
-    setCurrentPage('home');
-  };
-
+  const navigateToSubmitTicket = () => navigate('/submit-ticket');
+  const navigateToHome = () => navigate('/');
   const navigateToAppealList = (tab?: string) => {
-    if (tab) {
-      setAppealListTab(tab);
-    }
-    setCurrentPage('appeal-list');
+    if (tab) setAppealListTab(tab);
+    navigate('/appeal-list');
   };
-
-  const navigateToAppealDetail = (appealId: number) => {
-    setSelectedAppealId(appealId);
-    setCurrentPage('appeal-detail');
-  };
-
-  const navigateBackFromDetail = () => {
-    setCurrentPage('appeal-list');
-  };
-
+  const navigateToAppealDetail = (appealId: number) => navigate(`/appeal-detail/${appealId}`);
+  const navigateBackFromDetail = () => navigate('/appeal-list');
   const navigateToTeamRecruitment = () => {
-    // 如果已经是小队长模式，直接进入小队长页面
     if (isLeaderMode) {
       setTeamApplicationStatus('approved');
-      setCurrentPage('team-leader');
+      navigate('/team-leader');
     } else {
-      setCurrentPage('team-recruitment');
+      navigate('/team-recruitment');
     }
   };
-
-  const navigateToTeamApplication = () => {
-    setCurrentPage('team-application');
-  };
-
+  const navigateToTeamApplication = () => navigate('/team-application');
   const navigateToReviewPending = () => {
     setTeamApplicationStatus('pending');
-    setCurrentPage('review-pending');
+    navigate('/review-pending');
   };
-
   const navigateToReviewRejected = () => {
     setTeamApplicationStatus('rejected');
-    setCurrentPage('review-rejected');
+    navigate('/review-rejected');
   };
-
   const navigateToTeamLeaderPage = () => {
     setTeamApplicationStatus('approved');
-    setCurrentPage('team-leader');
+    navigate('/team-leader');
   };
-
-  const navigateToTaskList = () => {
-    setCurrentPage('task-list');
-  };
-
-  const navigateToTaskDetail = (taskId: number) => {
-    setSelectedTaskId(taskId);
-    setCurrentPage('task-detail');
-  };
-
-  const navigateBackFromTaskDetail = () => {
-    setCurrentPage('task-list');
-  };
-
-  const navigateToTeamDetail = (teamId: number) => {
-    setSelectedTeamId(teamId);
-    setCurrentPage('team-detail');
-  };
-
-  const navigateToTeamData = () => {
-    setCurrentPage('team-data');
-  };
-
+  const navigateToTaskList = () => navigate('/task-list');
+  const navigateToTaskDetail = (taskId: number) => navigate(`/task-detail/${taskId}`);
+  const navigateBackFromTaskDetail = () => navigate('/task-list');
+  const navigateToTeamDetail = (teamId: number) => navigate(`/team-detail/${teamId}`);
+  const navigateToTeamData = () => navigate('/team-data');
   const navigateToTeamDataFromLeader = () => {
     setTeamDataSource('team-leader');
-    setCurrentPage('team-data');
+    navigate('/team-data');
   };
-
   const navigateToTeamDataFromDetail = () => {
     setTeamDataSource('team-detail');
-    setCurrentPage('team-data');
+    navigate('/team-data');
   };
-
   const navigateBackFromTeamData = () => {
-    if (teamDataSource === 'team-leader') {
-      setCurrentPage('team-leader');
-    } else {
-      setCurrentPage('team-detail');
-    }
+    if (teamDataSource === 'team-leader') navigate('/team-leader');
+    else navigate('/team-detail');
   };
-
-  const navigateBackToTeamDetail = () => {
-    setCurrentPage('team-detail');
-  };
-
-  const navigateToPKEventList = () => {
-    setCurrentPage('pk-event-list');
-  };
-
-  const navigateToPKEventDetail = (eventId: number) => {
-    setSelectedEventId(eventId);
-    setCurrentPage('pk-event-detail');
-  };
-
-  const navigateToPKRanking = (eventId: number) => {
-    setSelectedEventId(eventId);
-    setCurrentPage('pk-ranking');
-  };
-
-  const navigateToPKTeamDetail = () => {
-    setCurrentPage('pk-team-detail');
-  };
-
-  const navigateBackFromPKEventDetail = () => {
-    setCurrentPage('pk-event-list');
-  };
-
-  const navigateBackFromPKRanking = () => {
-    setCurrentPage('pk-event-detail');
-  };
-
-  const navigateBackFromPKTeamDetail = () => {
-    setCurrentPage('pk-ranking');
-  };
-
-  const handleDriverBinding = () => {
-    setIsDriverBound(true);
-  };
-
+  const navigateBackToTeamDetail = () => navigate('/team-detail');
+  const navigateToPKEventList = () => navigate('/pk-event-list');
+  const navigateToPKEventDetail = (eventId: number) => navigate(`/pk-event-detail/${eventId}`);
+  const navigateToPKRanking = (eventId: number) => navigate(`/pk-ranking/${eventId}`);
+  const navigateToPKTeamDetail = () => navigate('/pk-team-detail');
+  const navigateBackFromPKEventDetail = () => navigate('/pk-event-list');
+  const navigateBackFromPKRanking = (eventId: number) => navigate(`/pk-event-detail/${eventId}`);
+  const navigateBackFromPKTeamDetail = () => navigate('/pk-ranking');
+  const handleDriverBinding = () => setIsDriverBound(true);
+  const navigateToDriverBinding = () => navigate('/driver-binding');
   const handleToggleLeaderMode = (isLeader: boolean) => {
     setIsLeaderMode(isLeader);
     if (isLeader) {
-      // 如果打开开关，自动设置为已审核通过状态
       setTeamApplicationStatus('approved');
       setIsDriverBound(true);
     } else {
-      // 如果关闭开关，重置为未申请状态
       setTeamApplicationStatus('none');
       setIsDriverBound(false);
     }
   };
 
-  // 监听演示测试按钮的自定义事件
+  // 每次重启/刷新应用时重置「每日绑定尝试次数」，便于开发模拟
+  useEffect(() => {
+    const prefix = 'driver_binding_attempt_';
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith(prefix)) keysToRemove.push(key);
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
+  }, []);
+
   useEffect(() => {
     const handleTeamStatus = (event: Event) => {
-      const customEvent = event as CustomEvent;
-      if (customEvent.detail === 'approved') {
-        navigateToTeamLeaderPage();
-      } else if (customEvent.detail === 'rejected') {
-        navigateToReviewRejected();
-      }
+      const e = event as CustomEvent;
+      if (e.detail === 'approved') navigateToTeamLeaderPage();
+      else if (e.detail === 'rejected') navigateToReviewRejected();
     };
-
     window.addEventListener('team-status', handleTeamStatus);
-    return () => {
-      window.removeEventListener('team-status', handleTeamStatus);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => window.removeEventListener('team-status', handleTeamStatus);
   }, []);
 
   const showDevelopingToast = () => {
-    // 简单的提示实现
     const toast = document.createElement('div');
     toast.textContent = '功能开发中...';
-    toast.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      z-index: 9999;
-      font-size: 14px;
-    `;
+    toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:white;padding:12px 24px;border-radius:8px;z-index:9999;font-size:14px;';
     document.body.appendChild(toast);
-    setTimeout(() => {
-      document.body.removeChild(toast);
-    }, 2000);
+    setTimeout(() => document.body.removeChild(toast), 2000);
   };
 
-  const navigateToLevelCenter = () => {
-    setCurrentPage('level-center');
-  };
-
-  const navigateToLevelRules = () => {
-    setCurrentPage('level-rules');
-  };
-
-  const navigateBackFromLevelCenter = () => {
-    setCurrentPage('team-leader');
-  };
-
-  const navigateToGrowthDetail = () => {
-    setCurrentPage('growth-detail');
-  };
-
-  const navigateBackFromGrowthDetail = () => {
-    setCurrentPage('level-center');
-  };
-
-  const navigateBackFromLevelRules = () => {
-    setCurrentPage('level-center');
-  };
-
-  const navigateToBenefitDetail = (benefitId: number, level: number) => {
-    setSelectedBenefitId(benefitId);
-    setSelectedBenefitLevel(level);
-    setCurrentPage('benefit-detail');
-  };
-
-  const navigateBackFromBenefitDetail = () => {
-    setCurrentPage('level-center');
-  };
-
+  const navigateToLevelCenter = () => navigate('/level-center');
+  const navigateToLevelRules = () => navigate('/level-rules');
+  const navigateBackFromLevelCenter = () => navigate('/team-leader');
+  const navigateToGrowthDetail = () => navigate('/growth-detail');
+  const navigateBackFromGrowthDetail = () => navigate('/level-center');
+  const navigateBackFromLevelRules = () => navigate('/level-center');
+  const navigateToBenefitDetail = (benefitId: number, level: number) => navigate(`/benefit-detail/${benefitId}?level=${level}`);
+  const navigateBackFromBenefitDetail = () => navigate('/level-center');
   const navigateToTeamChat = (teamName: string, teamMemberCount: number) => {
-    setTeamChatInfo({ teamName, teamMemberCount });
-    setCurrentPage('team-chat');
+    navigate('/team-chat', { state: { teamName, teamMemberCount } });
   };
-
-  const navigateBackFromTeamChat = () => {
-    setCurrentPage('team-leader');
-  };
-
-  const navigateToCommissionFreeCardList = () => {
-    setCurrentPage('commission-free-card-list');
-  };
-
-  const navigateBackFromCardList = () => {
-    setCurrentPage('home');
-  };
-
-  const navigateToCardDetail = (cardId: number) => {
-    setSelectedCardId(cardId);
-    setCurrentPage('commission-free-card-detail');
-  };
-
-  const navigateBackFromCardDetail = () => {
-    setCurrentPage('commission-free-card-list');
-  };
-
-  const navigateToOrderConfirm = (cardId: number) => {
-    setSelectedCardId(cardId);
-    setCurrentPage('order-confirm');
-  };
-
-  const navigateBackFromOrderConfirm = () => {
-    setCurrentPage('commission-free-card-detail');
-  };
-
+  const navigateBackFromTeamChat = () => navigate('/team-leader');
+  const navigateToCommissionFreeCardList = () => navigate('/commission-free-card-list');
+  const navigateBackFromCardList = () => navigate('/');
+  const navigateToCardDetail = (cardId: number) => navigate(`/commission-free-card-detail/${cardId}`);
+  const navigateBackFromCardDetail = () => navigate('/commission-free-card-list');
+  const navigateToOrderConfirm = (cardId: number) => navigate(`/order-confirm/${cardId}`);
+  const navigateBackFromOrderConfirm = (cardId: number) => navigate(`/commission-free-card-detail/${cardId}`);
   const navigateToPayment = (orderData: any) => {
     setOrderData(orderData);
-    // 模拟支付成功，生成订单ID
     const newOrderId = Date.now().toString();
-    setOrderId(newOrderId);
-    setCurrentPage('payment-success');
+    navigate(`/payment-success/${newOrderId}`);
   };
-
-  const navigateToOrderDetail = (orderId: string) => {
-    setOrderId(orderId);
-    setCurrentPage('order-detail');
-  };
-
-  const navigateBackFromOrderDetail = () => {
-    // 从订单详情返回时，根据来源页面决定返回哪里
-    if (currentPage === 'order-detail') {
-      // 如果当前在订单详情页，返回订单列表
-      setCurrentPage('my-order-list');
-    } else {
-      setCurrentPage('commission-free-card-list');
-    }
-  };
-
-  const navigateToMyPage = () => {
-    setCurrentPage('my-page');
-  };
-
+  const navigateToOrderDetail = (orderId: string) => navigate(`/order-detail/${orderId}`);
+  const navigateBackFromOrderDetail = () => navigate('/my-order-list');
+  const navigateToMyPage = () => navigate('/my-page');
   const navigateToMyOrderList = (tab?: string) => {
-    if (tab) {
-      setOrderListTab(tab);
-    }
-    setCurrentPage('my-order-list');
+    if (tab) setOrderListTab(tab);
+    navigate('/my-order-list');
   };
+  const navigateBackFromMyOrderList = () => navigate('/my-page');
+  const navigateToOrderDetailFromList = (orderId: string) => navigate(`/order-detail/${orderId}`);
+  const navigateBackFromPaymentSuccess = () => navigate('/commission-free-card-list');
 
-  const navigateBackFromMyOrderList = () => {
-    setCurrentPage('my-page');
+  const AppealDetailRoute = () => {
+    const { id } = useParams<{ id: string }>();
+    if (!id) return <Navigate to="/appeal-list" replace />;
+    return <AppealDetail appealId={+id} onNavigateBack={navigateBackFromDetail} onShowDeveloping={showDevelopingToast} />;
   };
-
-  const navigateToOrderDetailFromList = (orderId: string) => {
-    setOrderId(orderId);
-    setCurrentPage('order-detail');
+  const TaskDetailRoute = () => {
+    const { id } = useParams<{ id: string }>();
+    if (!id) return <Navigate to="/task-list" replace />;
+    return <TaskDetail taskId={+id} onNavigateBack={navigateBackFromTaskDetail} onShowDeveloping={showDevelopingToast} />;
   };
-
-  const navigateBackFromPaymentSuccess = () => {
-    setCurrentPage('commission-free-card-list');
+  const TeamDetailRoute = () => {
+    const { id } = useParams<{ id: string }>();
+    if (!id) return <Navigate to="/team-leader" replace />;
+    return <TeamDetail teamId={+id} onNavigateBack={navigateToTeamLeaderPage} onNavigateToTeamData={navigateToTeamDataFromDetail} onShowDeveloping={showDevelopingToast} />;
+  };
+  const PKEventDetailRoute = () => {
+    const { eventId } = useParams<{ eventId: string }>();
+    if (!eventId) return <Navigate to="/pk-event-list" replace />;
+    return <PKEventDetail eventId={+eventId} onNavigateBack={navigateBackFromPKEventDetail} onNavigateToRanking={navigateToPKRanking} onShowDeveloping={showDevelopingToast} />;
+  };
+  const PKRankingRoute = () => {
+    const { eventId } = useParams<{ eventId: string }>();
+    if (!eventId) return <Navigate to="/pk-event-list" replace />;
+    return <PKRanking eventId={+eventId} onNavigateBack={() => navigate(`/pk-event-detail/${eventId}`)} onNavigateToTeamDetail={navigateToPKTeamDetail} />;
+  };
+  const PKTeamDetailRoute = () => {
+    const { eventId } = useParams<{ eventId: string }>();
+    return <PKTeamDetail onNavigateBack={() => (eventId ? navigate(`/pk-ranking/${eventId}`) : navigate('/pk-event-list'))} />;
+  };
+  const BenefitDetailRoute = () => {
+    const { benefitId } = useParams<{ benefitId: string }>();
+    const level = new URLSearchParams(location.search).get('level');
+    if (!benefitId) return <Navigate to="/level-center" replace />;
+    return <BenefitDetail onNavigateBack={navigateBackFromBenefitDetail} initialBenefitId={+benefitId} currentLevel={level ? +level : 3} />;
+  };
+  const TeamChatRoute = () => {
+    const state = location.state as { teamName?: string; teamMemberCount?: number } | null;
+    if (!state?.teamName) return <Navigate to="/team-leader" replace />;
+    return <TeamChatPage onNavigateBack={navigateBackFromTeamChat} teamName={state.teamName} teamMemberCount={state.teamMemberCount ?? 0} />;
+  };
+  const CommissionFreeCardDetailRoute = () => {
+    const { id } = useParams<{ id: string }>();
+    if (!id) return <Navigate to="/commission-free-card-list" replace />;
+    return <CommissionFreeCardDetail onNavigateBack={navigateBackFromCardDetail} onNavigateToOrderConfirm={navigateToOrderConfirm} cardId={+id} />;
+  };
+  const OrderConfirmRoute = () => {
+    const { cardId } = useParams<{ cardId: string }>();
+    if (!cardId) return <Navigate to="/commission-free-card-list" replace />;
+    return <OrderConfirm onNavigateBack={() => navigate(`/commission-free-card-detail/${cardId}`)} onNavigateToPayment={navigateToPayment} cardId={+cardId} />;
+  };
+  const PaymentSuccessRoute = () => {
+    const { orderId } = useParams<{ orderId: string }>();
+    if (!orderId) return <Navigate to="/commission-free-card-list" replace />;
+    return <PaymentSuccess onNavigateToCardList={navigateBackFromPaymentSuccess} onNavigateToOrderDetail={navigateToOrderDetail} orderId={orderId} />;
+  };
+  const OrderDetailRoute = () => {
+    const { orderId } = useParams<{ orderId: string }>();
+    if (!orderId) return <Navigate to="/my-order-list" replace />;
+    return <OrderDetail onNavigateBack={navigateBackFromOrderDetail} onNavigateToPayment={(id) => navigate(`/payment-success/${id}`)} onShowCancelModal={showDevelopingToast} onShowConfirmReceipt={showDevelopingToast} orderId={orderId} />;
   };
 
   return (
     <div className="phone-simulator-wrapper">
       <div className="phone-simulator">
         <div className="phone-content">
-      {currentPage === 'home' && (
-        <HomePage 
-          onNavigateToSubmitTicket={navigateToSubmitTicket}
-          onNavigateToAppealList={navigateToAppealList}
-          onNavigateToTeamRecruitment={navigateToTeamRecruitment}
-          onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList}
-          onNavigateToMyPage={navigateToMyPage}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'submit-ticket' && (
-        <SubmitTicket 
-          onNavigateToHome={navigateToHome}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'appeal-list' && (
-        <AppealList
-          onNavigateToHome={navigateToHome}
-          onNavigateToDetail={navigateToAppealDetail}
-          onShowDeveloping={showDevelopingToast}
-          tab={appealListTab}
-        />
-      )}
-      {currentPage === 'appeal-detail' && selectedAppealId && (
-        <AppealDetail
-          appealId={selectedAppealId}
-          onNavigateBack={navigateBackFromDetail}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'team-recruitment' && (
-        <TeamRecruitment
-          onNavigateToHome={navigateToHome}
-          onNavigateToApplication={navigateToTeamApplication}
-          onNavigateToPending={navigateToReviewPending}
-          onNavigateToRejected={navigateToReviewRejected}
-          onNavigateToLeader={navigateToTeamLeaderPage}
-          onDriverBinding={handleDriverBinding}
-          isDriverBound={isDriverBound}
-          applicationStatus={teamApplicationStatus}
-          onShowDeveloping={showDevelopingToast}
-          onToggleLeaderMode={handleToggleLeaderMode}
-        />
-      )}
-      {currentPage === 'team-application' && (
-        <TeamApplication
-          onNavigateBack={navigateToTeamRecruitment}
-          onSubmit={navigateToReviewPending}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'review-pending' && (
-        <ReviewPending
-          onNavigateToHome={navigateToHome}
-        />
-      )}
-      {currentPage === 'review-rejected' && (
-        <ReviewRejected
-          onNavigateToApplication={navigateToTeamApplication}
-        />
-      )}
-      {currentPage === 'team-leader' && (
-        <TeamLeaderPage
-          onNavigateToHome={navigateToHome}
-          onNavigateToTaskList={navigateToTaskList}
-          onNavigateToTeamDetail={navigateToTeamDetail}
-          onNavigateToTeamData={navigateToTeamDataFromLeader}
-          onNavigateToPKList={navigateToPKEventList}
-          onNavigateToLevelCenter={navigateToLevelCenter}
-          onNavigateToTeamChat={navigateToTeamChat}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'task-list' && (
-        <TaskList
-          onNavigateBack={navigateToTeamLeaderPage}
-          onNavigateToTaskDetail={navigateToTaskDetail}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'task-detail' && selectedTaskId && (
-        <TaskDetail
-          taskId={selectedTaskId}
-          onNavigateBack={navigateBackFromTaskDetail}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'team-detail' && selectedTeamId && (
-        <TeamDetail
-          teamId={selectedTeamId}
-          onNavigateBack={navigateToTeamLeaderPage}
-          onNavigateToTeamData={navigateToTeamDataFromDetail}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'team-data' && (
-        <TeamData
-          onNavigateBack={navigateBackFromTeamData}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'pk-event-list' && (
-        <PKEventList
-          onNavigateBack={navigateToTeamLeaderPage}
-          onNavigateToEventDetail={navigateToPKEventDetail}
-        />
-      )}
-      {currentPage === 'pk-event-detail' && selectedEventId && (
-        <PKEventDetail
-          eventId={selectedEventId}
-          onNavigateBack={navigateBackFromPKEventDetail}
-          onNavigateToRanking={navigateToPKRanking}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'pk-ranking' && selectedEventId && (
-        <PKRanking
-          eventId={selectedEventId}
-          onNavigateBack={navigateBackFromPKRanking}
-          onNavigateToTeamDetail={navigateToPKTeamDetail}
-        />
-      )}
-      {currentPage === 'pk-team-detail' && (
-        <PKTeamDetail
-          onNavigateBack={navigateBackFromPKTeamDetail}
-        />
-      )}
-      {currentPage === 'level-center' && (
-        <LevelCenter
-          onNavigateBack={navigateBackFromLevelCenter}
-          onNavigateToRules={navigateToLevelRules}
-          onShowDeveloping={showDevelopingToast}
-          onNavigateToGrowthDetail={navigateToGrowthDetail}
-          onNavigateToBenefitDetail={navigateToBenefitDetail}
-        />
-      )}
-      {currentPage === 'level-rules' && (
-        <LevelRules
-          onNavigateBack={navigateBackFromLevelRules}
-        />
-      )}
-      {currentPage === 'growth-detail' && (
-        <GrowthDetail
-          onNavigateBack={navigateBackFromGrowthDetail}
-        />
-      )}
-      {currentPage === 'benefit-detail' && (
-        <BenefitDetail
-          onNavigateBack={navigateBackFromBenefitDetail}
-          initialBenefitId={selectedBenefitId ?? undefined}
-          currentLevel={selectedBenefitLevel}
-        />
-      )}
-      {currentPage === 'team-chat' && teamChatInfo && (
-        <TeamChatPage
-          onNavigateBack={navigateBackFromTeamChat}
-          teamName={teamChatInfo.teamName}
-          teamMemberCount={teamChatInfo.teamMemberCount}
-        />
-      )}
-      {currentPage === 'commission-free-card-list' && (
-        <CommissionFreeCardList
-          onNavigateBack={navigateBackFromCardList}
-          onNavigateToDetail={navigateToCardDetail}
-          onNavigateToHome={navigateToHome}
-          onNavigateToTeamRecruitment={navigateToTeamRecruitment}
-          onNavigateToMyPage={navigateToMyPage}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'commission-free-card-detail' && selectedCardId && (
-        <CommissionFreeCardDetail
-          onNavigateBack={navigateBackFromCardDetail}
-          onNavigateToOrderConfirm={navigateToOrderConfirm}
-          cardId={selectedCardId}
-        />
-      )}
-      {currentPage === 'order-confirm' && selectedCardId && (
-        <OrderConfirm
-          onNavigateBack={navigateBackFromOrderConfirm}
-          onNavigateToPayment={navigateToPayment}
-          cardId={selectedCardId}
-        />
-      )}
-      {currentPage === 'payment-success' && orderId && (
-        <PaymentSuccess
-          onNavigateToCardList={navigateBackFromPaymentSuccess}
-          onNavigateToOrderDetail={navigateToOrderDetail}
-          orderId={orderId}
-        />
-      )}
-      {currentPage === 'order-detail' && orderId && (
-        <OrderDetail
-          onNavigateBack={navigateBackFromOrderDetail}
-          onNavigateToPayment={(orderId) => {
-            // 从订单详情跳转到支付（模拟）
-            setOrderId(orderId);
-            setCurrentPage('payment-success');
-          }}
-          onShowCancelModal={showDevelopingToast}
-          onShowConfirmReceipt={showDevelopingToast}
-          orderId={orderId}
-        />
-      )}
-      {currentPage === 'my-page' && (
-        <MyPage
-          onNavigateToOrderList={navigateToMyOrderList}
-          onNavigateToAppealList={navigateToAppealList}
-          onNavigateToSubmitTicket={navigateToSubmitTicket}
-          onNavigateToHome={navigateToHome}
-          onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList}
-          onNavigateToTeamRecruitment={navigateToTeamRecruitment}
-          onShowDeveloping={showDevelopingToast}
-        />
-      )}
-      {currentPage === 'my-order-list' && (
-        <MyOrderList
-          onNavigateBack={navigateBackFromMyOrderList}
-          onNavigateToOrderDetail={navigateToOrderDetailFromList}
-          initialTab={orderListTab}
-        />
-      )}
+          <Routes>
+            <Route path="/" element={<HomePage onNavigateToSubmitTicket={navigateToSubmitTicket} onNavigateToAppealList={navigateToAppealList} onNavigateToTeamRecruitment={navigateToTeamRecruitment} onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList} onNavigateToMyPage={navigateToMyPage} onShowDeveloping={showDevelopingToast} />} />
+            <Route path="/submit-ticket" element={<SubmitTicket onNavigateToHome={navigateToHome} onShowDeveloping={showDevelopingToast} />} />
+            <Route path="/appeal-list" element={<AppealList onNavigateToHome={navigateToHome} onNavigateToDetail={navigateToAppealDetail} onShowDeveloping={showDevelopingToast} tab={appealListTab} />} />
+            <Route path="/appeal-detail/:id" element={<AppealDetailRoute />} />
+            <Route path="/team-recruitment" element={<TeamRecruitment onNavigateToHome={navigateToHome} onNavigateToApplication={navigateToTeamApplication} onNavigateToPending={navigateToReviewPending} onNavigateToRejected={navigateToReviewRejected} onNavigateToLeader={navigateToTeamLeaderPage} onDriverBinding={handleDriverBinding} isDriverBound={isDriverBound} applicationStatus={teamApplicationStatus} onShowDeveloping={showDevelopingToast} onToggleLeaderMode={handleToggleLeaderMode} />} />
+            <Route path="/team-application" element={<TeamApplication onNavigateBack={navigateToTeamRecruitment} onSubmit={navigateToReviewPending} onShowDeveloping={showDevelopingToast} />} />
+            <Route path="/review-pending" element={<ReviewPending onNavigateToHome={navigateToHome} />} />
+            <Route path="/review-rejected" element={<ReviewRejected onNavigateToApplication={navigateToTeamApplication} />} />
+            <Route path="/team-leader" element={<TeamLeaderPage onNavigateToHome={navigateToHome} onNavigateToTaskList={navigateToTaskList} onNavigateToTeamDetail={navigateToTeamDetail} onNavigateToTeamData={navigateToTeamDataFromLeader} onNavigateToPKList={navigateToPKEventList} onNavigateToLevelCenter={navigateToLevelCenter} onNavigateToTeamChat={navigateToTeamChat} onShowDeveloping={showDevelopingToast} />} />
+            <Route path="/task-list" element={<TaskList onNavigateBack={navigateToTeamLeaderPage} onNavigateToTaskDetail={navigateToTaskDetail} onShowDeveloping={showDevelopingToast} />} />
+            <Route path="/task-detail/:id" element={<TaskDetailRoute />} />
+            <Route path="/team-detail/:id" element={<TeamDetailRoute />} />
+            <Route path="/team-data" element={<TeamData onNavigateBack={navigateBackFromTeamData} onShowDeveloping={showDevelopingToast} />} />
+            <Route path="/pk-event-list" element={<PKEventList onNavigateBack={navigateToTeamLeaderPage} onNavigateToEventDetail={navigateToPKEventDetail} />} />
+            <Route path="/pk-event-detail/:eventId" element={<PKEventDetailRoute />} />
+            <Route path="/pk-ranking/:eventId" element={<PKRankingRoute />} />
+            <Route path="/pk-team-detail/:eventId" element={<PKTeamDetailRoute />} />
+            <Route path="/level-center" element={<LevelCenter onNavigateBack={navigateBackFromLevelCenter} onNavigateToRules={navigateToLevelRules} onShowDeveloping={showDevelopingToast} onNavigateToGrowthDetail={navigateToGrowthDetail} onNavigateToBenefitDetail={navigateToBenefitDetail} />} />
+            <Route path="/level-rules" element={<LevelRules onNavigateBack={navigateBackFromLevelRules} />} />
+            <Route path="/growth-detail" element={<GrowthDetail onNavigateBack={navigateBackFromGrowthDetail} />} />
+            <Route path="/benefit-detail/:benefitId" element={<BenefitDetailRoute />} />
+            <Route path="/team-chat" element={<TeamChatRoute />} />
+            <Route path="/commission-free-card-list" element={<CommissionFreeCardList onNavigateBack={navigateBackFromCardList} onNavigateToDetail={navigateToCardDetail} onNavigateToHome={navigateToHome} onNavigateToTeamRecruitment={navigateToTeamRecruitment} onNavigateToMyPage={navigateToMyPage} onShowDeveloping={showDevelopingToast} />} />
+            <Route path="/commission-free-card-detail/:id" element={<CommissionFreeCardDetailRoute />} />
+            <Route path="/order-confirm/:cardId" element={<OrderConfirmRoute />} />
+            <Route path="/payment-success/:orderId" element={<PaymentSuccessRoute />} />
+            <Route path="/order-detail/:orderId" element={<OrderDetailRoute />} />
+            <Route path="/my-page" element={<MyPage onNavigateToOrderList={navigateToMyOrderList} onNavigateToAppealList={navigateToAppealList} onNavigateToSubmitTicket={navigateToSubmitTicket} onNavigateToHome={navigateToHome} onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList} onNavigateToTeamRecruitment={navigateToTeamRecruitment} onNavigateToDriverBinding={navigateToDriverBinding} onShowDeveloping={showDevelopingToast} isDriverBound={isDriverBound} onDriverBindingSuccess={handleDriverBinding} loginPhone="13812340000" matchedDriverNameHint={!isDriverBound ? '张*' : null} />} />
+            <Route path="/driver-binding" element={<DriverBindingPage onNavigateBack={() => navigate('/my-page')} onBindingSuccess={handleDriverBinding} />} />
+            <Route path="/my-order-list" element={<MyOrderList onNavigateBack={navigateBackFromMyOrderList} onNavigateToOrderDetail={navigateToOrderDetailFromList} initialTab={orderListTab} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </div>
       </div>
     </div>
