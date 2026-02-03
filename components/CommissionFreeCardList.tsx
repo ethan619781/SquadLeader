@@ -9,6 +9,8 @@ interface CommissionFreeCardListProps {
   onNavigateToTeamRecruitment?: () => void;
   onNavigateToMyPage?: () => void;
   onShowDeveloping?: () => void;
+  /** 是否展示“小队”底部菜单（司机或小队长） */
+  canShowTeamTab?: boolean;
 }
 
 interface CardProduct {
@@ -29,7 +31,8 @@ export default function CommissionFreeCardList({
   onNavigateToHome,
   onNavigateToTeamRecruitment,
   onNavigateToMyPage,
-  onShowDeveloping
+  onShowDeveloping,
+  canShowTeamTab = false
 }: CommissionFreeCardListProps) {
   const [currentCity, setCurrentCity] = useState('杭州');
   const [sortType, setSortType] = useState<'comprehensive' | 'sales' | 'price'>('comprehensive');
@@ -266,9 +269,13 @@ export default function CommissionFreeCardList({
         )}
       </div>
 
-      {/* 底部导航 */}
+      {/* 底部导航：普通用户不展示“小队”，司机/小队长才展示 */}
       <div className="bottom-navigation-bar">
-        <div className="w-full grid grid-cols-4 h-[60px]">
+        <div
+          className={`w-full grid ${
+            canShowTeamTab ? 'grid-cols-4' : 'grid-cols-3'
+          } h-[60px]`}
+        >
           <button
             className="flex flex-col items-center justify-center gap-1"
             onClick={() => {
@@ -284,21 +291,25 @@ export default function CommissionFreeCardList({
           </button>
           <button className="flex flex-col items-center justify-center gap-1">
             <div className="w-6 h-6 bg-[#FFC300] rounded-lg" />
-            <span className="text-[11px] text-[#1A1A1A]" style={{ fontWeight: 600 }}>免佣卡</span>
+            <span className="text-[11px] text-[#1A1A1A]" style={{ fontWeight: 600 }}>
+              免佣卡
+            </span>
           </button>
-          <button
-            className="flex flex-col items-center justify-center gap-1"
-            onClick={() => {
-              if (onNavigateToTeamRecruitment) {
-                onNavigateToTeamRecruitment();
-              } else if (onShowDeveloping) {
-                onShowDeveloping();
-              }
-            }}
-          >
-            <div className="w-6 h-6 bg-gray-300 rounded-lg" />
-            <span className="text-[11px] text-gray-500">小队</span>
-          </button>
+          {canShowTeamTab && (
+            <button
+              className="flex flex-col items-center justify-center gap-1"
+              onClick={() => {
+                if (onNavigateToTeamRecruitment) {
+                  onNavigateToTeamRecruitment();
+                } else if (onShowDeveloping) {
+                  onShowDeveloping();
+                }
+              }}
+            >
+              <div className="w-6 h-6 bg-gray-300 rounded-lg" />
+              <span className="text-[11px] text-gray-500">小队</span>
+            </button>
+          )}
           <button
             className="flex flex-col items-center justify-center gap-1"
             onClick={() => {

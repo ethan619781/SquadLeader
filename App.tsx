@@ -46,6 +46,8 @@ export default function App() {
   const [teamApplicationStatus, setTeamApplicationStatus] = useState<'none' | 'pending' | 'rejected' | 'approved'>('none');
   const [isDriverBound, setIsDriverBound] = useState(false);
   const [isLeaderMode, setIsLeaderMode] = useState(false);
+  // 是否具备“小队”入口（司机或小队长）
+  const canShowTeamTab = isDriverBound || isLeaderMode;
 
   const navigateToSubmitTicket = () => navigate('/submit-ticket');
   const navigateToHome = () => navigate('/');
@@ -243,7 +245,20 @@ export default function App() {
       <div className="phone-simulator">
         <div className="phone-content">
           <Routes>
-            <Route path="/" element={<HomePage onNavigateToSubmitTicket={navigateToSubmitTicket} onNavigateToAppealList={navigateToAppealList} onNavigateToTeamRecruitment={navigateToTeamRecruitment} onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList} onNavigateToMyPage={navigateToMyPage} onShowDeveloping={showDevelopingToast} />} />
+            <Route
+              path="/"
+              element={
+                <HomePage
+                  onNavigateToSubmitTicket={navigateToSubmitTicket}
+                  onNavigateToAppealList={navigateToAppealList}
+                  onNavigateToTeamRecruitment={navigateToTeamRecruitment}
+                  onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList}
+                  onNavigateToMyPage={navigateToMyPage}
+                  onShowDeveloping={showDevelopingToast}
+                  canShowTeamTab={canShowTeamTab}
+                />
+              }
+            />
             <Route path="/submit-ticket" element={<SubmitTicket onNavigateToHome={navigateToHome} onShowDeveloping={showDevelopingToast} />} />
             <Route path="/appeal-list" element={<AppealList onNavigateToHome={navigateToHome} onNavigateToDetail={navigateToAppealDetail} onShowDeveloping={showDevelopingToast} tab={appealListTab} />} />
             <Route path="/appeal-detail/:id" element={<AppealDetailRoute />} />
@@ -265,12 +280,44 @@ export default function App() {
             <Route path="/growth-detail" element={<GrowthDetail onNavigateBack={navigateBackFromGrowthDetail} />} />
             <Route path="/benefit-detail/:benefitId" element={<BenefitDetailRoute />} />
             <Route path="/team-chat" element={<TeamChatRoute />} />
-            <Route path="/commission-free-card-list" element={<CommissionFreeCardList onNavigateBack={navigateBackFromCardList} onNavigateToDetail={navigateToCardDetail} onNavigateToHome={navigateToHome} onNavigateToTeamRecruitment={navigateToTeamRecruitment} onNavigateToMyPage={navigateToMyPage} onShowDeveloping={showDevelopingToast} />} />
+            <Route
+              path="/commission-free-card-list"
+              element={
+                <CommissionFreeCardList
+                  onNavigateBack={navigateBackFromCardList}
+                  onNavigateToDetail={navigateToCardDetail}
+                  onNavigateToHome={navigateToHome}
+                  onNavigateToTeamRecruitment={navigateToTeamRecruitment}
+                  onNavigateToMyPage={navigateToMyPage}
+                  onShowDeveloping={showDevelopingToast}
+                  canShowTeamTab={canShowTeamTab}
+                />
+              }
+            />
             <Route path="/commission-free-card-detail/:id" element={<CommissionFreeCardDetailRoute />} />
             <Route path="/order-confirm/:cardId" element={<OrderConfirmRoute />} />
             <Route path="/payment-success/:orderId" element={<PaymentSuccessRoute />} />
             <Route path="/order-detail/:orderId" element={<OrderDetailRoute />} />
-            <Route path="/my-page" element={<MyPage onNavigateToOrderList={navigateToMyOrderList} onNavigateToAppealList={navigateToAppealList} onNavigateToSubmitTicket={navigateToSubmitTicket} onNavigateToHome={navigateToHome} onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList} onNavigateToTeamRecruitment={navigateToTeamRecruitment} onNavigateToDriverBinding={navigateToDriverBinding} onShowDeveloping={showDevelopingToast} isDriverBound={isDriverBound} onDriverBindingSuccess={handleDriverBinding} loginPhone="13812340000" matchedDriverNameHint={!isDriverBound ? '张*' : null} />} />
+            <Route
+              path="/my-page"
+              element={
+                <MyPage
+                  onNavigateToOrderList={navigateToMyOrderList}
+                  onNavigateToAppealList={navigateToAppealList}
+                  onNavigateToSubmitTicket={navigateToSubmitTicket}
+                  onNavigateToHome={navigateToHome}
+                  onNavigateToCommissionFreeCardList={navigateToCommissionFreeCardList}
+                  onNavigateToTeamRecruitment={navigateToTeamRecruitment}
+                  onNavigateToDriverBinding={navigateToDriverBinding}
+                  onShowDeveloping={showDevelopingToast}
+                  isDriverBound={isDriverBound}
+                  isLeaderMode={isLeaderMode}
+                  onDriverBindingSuccess={handleDriverBinding}
+                  loginPhone="13812340000"
+                  matchedDriverNameHint={!isDriverBound ? '张*' : null}
+                />
+              }
+            />
             <Route path="/driver-binding" element={<DriverBindingPage onNavigateBack={() => navigate('/my-page')} onBindingSuccess={handleDriverBinding} />} />
             <Route path="/my-order-list" element={<MyOrderList onNavigateBack={navigateBackFromMyOrderList} onNavigateToOrderDetail={navigateToOrderDetailFromList} initialTab={orderListTab} />} />
             <Route path="*" element={<Navigate to="/" replace />} />

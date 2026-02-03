@@ -15,8 +15,10 @@ interface MyPageProps {
   onNavigateToTeamRecruitment?: () => void;
   onNavigateToDriverBinding?: () => void;
   onShowDeveloping: () => void;
-  /** 是否已关联司机档案 */
+  /** 是否已关联司机档案（拥有“司机”身份及以上） */
   isDriverBound?: boolean;
+  /** 是否处于小队长模式（已审核通过） */
+  isLeaderMode?: boolean;
   /** 关联成功回调（被动/主动关联成功后由父组件更新状态） */
   onDriverBindingSuccess?: () => void;
   /** 当前登录手机号（用于被动关联：后台用此号检索司机库，脱敏展示） */
@@ -35,6 +37,7 @@ export default function MyPage({
   onNavigateToDriverBinding,
   onShowDeveloping,
   isDriverBound = false,
+  isLeaderMode = false,
   onDriverBindingSuccess,
   loginPhone,
   matchedDriverNameHint,
@@ -75,12 +78,18 @@ export default function MyPage({
     setTimeout(() => document.body.removeChild(el), 2000);
   };
 
-  // Mock 用户数据（未关联时显示“普通用户”，已关联显示昵称/小队长等）
+  // Mock 用户数据：
+  // - 未关联：显示“普通用户”
+  // - 已关联司机：显示“司机”
+  // - 小队长模式：显示“小队长”
+  const identityLabel = isLeaderMode ? '小队长' : isDriverBound ? '司机' : '普通用户';
+  const displayName = isLeaderMode ? '张队长' : isDriverBound ? '司机' : '普通用户';
+
   const userData = {
-    name: isDriverBound ? '张队长' : '普通用户',
+    name: displayName,
     phone: loginPhone ? maskPhone(loginPhone) : '188****1234',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwb3J0cmFpdHxlbnwxfHx8fDE3Njg2MzQ2NzV8MA&ixlib=rb-4.1.0&q=80&w=200',
-    badge: isDriverBound ? '小队长' : '普通用户',
+    badge: identityLabel,
   };
 
   // Mock 订单统计数据
@@ -128,7 +137,12 @@ export default function MyPage({
               <span className="text-[18px] text-[#1A1A1A]" style={{ fontWeight: 600 }}>
                 {userData.name}
               </span>
-              <span className={`px-2 py-0.5 text-[11px] rounded ${isDriverBound ? 'bg-[#FFF8D9] text-[#FF6600]' : 'bg-white/80 text-[#666666]'}`} style={{ fontWeight: 500 }}>
+              <span
+                className={`px-2 py-0.5 text-[11px] rounded ${
+                  identityLabel !== '普通用户' ? 'bg-[#FFF8D9] text-[#FF6600]' : 'bg-white/80 text-[#666666]'
+                }`}
+                style={{ fontWeight: 500 }}
+              >
                 {userData.badge}
               </span>
             </div>
@@ -367,11 +381,15 @@ export default function MyPage({
         </div>
       </div>
 
-      {/* 底部导航 */}
+      {/* 底部导航：普通用户不展示“小队”，司机/小队长才展示 */}
       <div className="bottom-navigation-bar">
-        <div className="w-full grid grid-cols-4 h-[60px]">
-          <button 
-            className="flex flex-col items-center justify-center gap-1" 
+        <div
+          className={`w-full grid ${
+            identityLabel === '普通用户' ? 'grid-cols-3' : 'grid-cols-4'
+          } h-[60px]`}
+        >
+          <button
+            className="flex flex-col items-center justify-center gap-1"
             onClick={() => {
               if (onNavigateToHome) {
                 onNavigateToHome();
@@ -383,8 +401,8 @@ export default function MyPage({
             <div className="w-6 h-6 bg-gray-300 rounded-lg" />
             <span className="text-[11px] text-gray-500">首页</span>
           </button>
-          <button 
-            className="flex flex-col items-center justify-center gap-1" 
+          <button
+            className="flex flex-col items-center justify-center gap-1"
             onClick={() => {
               if (onNavigateToCommissionFreeCardList) {
                 onNavigateToCommissionFreeCardList();
@@ -396,22 +414,26 @@ export default function MyPage({
             <div className="w-6 h-6 bg-gray-300 rounded-lg" />
             <span className="text-[11px] text-gray-500">免佣卡</span>
           </button>
-          <button 
-            className="flex flex-col items-center justify-center gap-1" 
-            onClick={() => {
-              if (onNavigateToTeamRecruitment) {
-                onNavigateToTeamRecruitment();
-              } else {
-                onShowDeveloping();
-              }
-            }}
-          >
-            <div className="w-6 h-6 bg-gray-300 rounded-lg" />
-            <span className="text-[11px] text-gray-500">小队</span>
-          </button>
+          {identityLabel !== '普通用户' && (
+            <button
+              className="flex flex-col items-center justify-center gap-1"
+              onClick={() => {
+                if (onNavigateToTeamRecruitment) {
+                  onNavigateToTeamRecruitment();
+                } else {
+                  onShowDeveloping();
+                }
+              }}
+            >
+              <div className="w-6 h-6 bg-gray-300 rounded-lg" />
+              <span className="text-[11px] text-gray-500">小队</span>
+            </button>
+          )}
           <button className="flex flex-col items-center justify-center gap-1">
             <div className="w-6 h-6 bg-[#FFC300] rounded-lg" />
-            <span className="text-[11px] text-[#1A1A1A]" style={{ fontWeight: 600 }}>我的</span>
+            <span className="text-[11px] text-[#1A1A1A]" style={{ fontWeight: 600 }}>
+              我的
+            </span>
           </button>
         </div>
       </div>
